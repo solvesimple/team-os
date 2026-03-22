@@ -5,15 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SolveSimple. Team OS</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- Microsoft Authentication Library -->
-<script src="https://alcdn.msauth.net/browser/2.32.2/js/msal-browser.min.js" crossorigin="anonymous"></script>
+<!-- Microsoft Authentication Library v2.28.1 (confirmed CDN version) -->
+<script src="https://alcdn.msauth.net/browser/2.28.1/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <script>
 window.addEventListener('load', function() {
   if (typeof msal === 'undefined') {
+    // Primary CDN failed - try unpkg fallback
     var s = document.createElement('script');
-    s.src = 'https://unpkg.com/@azure/msal-browser@2.32.2/lib/msal-browser.min.js';
+    s.src = 'https://unpkg.com/@azure/msal-browser@2.28.1/lib/msal-browser.min.js';
+    s.crossOrigin = 'anonymous';
     s.onload = initApp;
-    s.onerror = function() { document.getElementById('login-error').style.display='block'; };
+    s.onerror = function() {
+      document.getElementById('login-error').style.display = 'block';
+    };
     document.head.appendChild(s);
   } else {
     initApp();
@@ -21,8 +25,6 @@ window.addEventListener('load', function() {
 });
 
 function initApp() {
-  // Use sessionStorage instead of localStorage to avoid Edge tracking prevention
-  MSAL_CONFIG.cache.cacheLocation = 'sessionStorage';
   window.msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
   initAuth();
 }
@@ -489,7 +491,7 @@ const SCOPES = ['Files.ReadWrite', 'User.Read'];
 const ONEDRIVE_FILE = '/me/drive/root:/SolveSimple Team OS/team-os-data.json:/content';
 
 // msalInstance is created in initApp() once the MSAL library has loaded
-let msalInstance = null;
+// msalApp initialized in initApp() after MSAL library loads
 let currentUser = null;
 let accessToken = null;
 let syncTimeout = null;
@@ -498,7 +500,7 @@ let syncTimeout = null;
 async function signIn() {
   try {
     // Use redirect instead of popup — works on all browsers and mobile
-    await msalInstance.loginRedirect({ scopes: SCOPES });
+    await window.msalApp.loginRedirect({ scopes: SCOPES });
   } catch (e) {
     console.error('Login failed:', e);
     showToast('Sign in failed — please try again');
@@ -526,34 +528,34 @@ async function handleAuth(account, token) {
 
 async function getToken() {
   try {
-    const accounts = msalInstance.getAllAccounts();
+    const accounts = window.msalApp.getAllAccounts();
     if (!accounts.length) return null;
-    const result = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+    const result = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
     return result.accessToken;
   } catch (e) {
     // Silent token refresh failed — redirect to login
-    await msalInstance.acquireTokenRedirect({ scopes: SCOPES });
+    await window.msalApp.acquireTokenRedirect({ scopes: SCOPES });
     return null;
   }
 }
 
 function signOut() {
-  msalInstance.logoutRedirect({ postLogoutRedirectUri: 'https://solvesimple.github.io/team-os/' });
+  window.msalApp.logoutRedirect({ postLogoutRedirectUri: 'https://solvesimple.github.io/team-os/' });
 }
 
 // Handle redirect on load — this runs on every page load and catches the auth response
 async function initAuth() {
   try {
-    const result = await msalInstance.handleRedirectPromise();
+    const result = await window.msalApp.handleRedirectPromise();
     if (result) {
       // Returning from Microsoft login redirect
       await handleAuth(result.account, result.accessToken);
       return;
     }
     // Check for existing session
-    const accounts = msalInstance.getAllAccounts();
+    const accounts = window.msalApp.getAllAccounts();
     if (accounts.length) {
-      const tokenResult = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+      const tokenResult = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
       await handleAuth(accounts[0], tokenResult.accessToken);
     }
   } catch(e) {
