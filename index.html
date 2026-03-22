@@ -475,17 +475,17 @@ let syncTimeout = null;
 // ===================== AUTH =====================
 async function signIn() {
   try {
-    const result = await msalInstance.loginPopup({ scopes: SCOPES });
-    await handleAuth(result);
+    // Use redirect instead of popup — works on all browsers and mobile
+    await msalInstance.loginRedirect({ scopes: SCOPES });
   } catch (e) {
     console.error('Login failed:', e);
     showToast('Sign in failed — please try again');
   }
 }
 
-async function handleAuth(result) {
-  currentUser = result.account;
-  accessToken = result.accessToken;
+async function handleAuth(account, token) {
+  currentUser = account;
+  accessToken = token;
   const name = currentUser.name || currentUser.username;
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = name.split(' ')[0];
@@ -493,7 +493,7 @@ async function handleAuth(result) {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
-  // Match logged-in user to team member
+  // Match logged-in user to team member by first name
   const firstName = name.split(' ')[0].toLowerCase();
   const idx = state.members.findIndex(m => m.toLowerCase().includes(firstName));
   if (idx >= 0) state.currentUser = idx;
@@ -509,28 +509,34 @@ async function getToken() {
     const result = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
     return result.accessToken;
   } catch (e) {
-    const result = await msalInstance.acquireTokenPopup({ scopes: SCOPES });
-    return result.accessToken;
+    // Silent token refresh failed — redirect to login
+    await msalInstance.acquireTokenRedirect({ scopes: SCOPES });
+    return null;
   }
 }
 
 function signOut() {
-  msalInstance.logoutPopup();
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
+  msalInstance.logoutRedirect({ postLogoutRedirectUri: 'https://solvesimple.github.io/team-os/' });
 }
 
-// Handle redirect on load
+// Handle redirect on load — this runs on every page load and catches the auth response
 async function initAuth() {
   try {
     const result = await msalInstance.handleRedirectPromise();
-    if (result) { await handleAuth(result); return; }
+    if (result) {
+      // Returning from Microsoft login redirect
+      await handleAuth(result.account, result.accessToken);
+      return;
+    }
+    // Check for existing session
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length) {
-      const token = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-      await handleAuth({ account: accounts[0], accessToken: token.accessToken });
+      const tokenResult = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+      await handleAuth(accounts[0], tokenResult.accessToken);
     }
-  } catch(e) { console.log('No existing session'); }
+  } catch(e) {
+    console.log('Auth init error:', e);
+  }
 }
 
 // ===================== ONEDRIVE SYNC =====================
