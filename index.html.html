@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolveSimple. Team OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#E8A020; --gold-light:#F5B93A; --gold-dark:#C4861A;
+  --ink:#1A1208; --bg:#faefe8; --card:#FFFFFF; --border:#EDD8CC;
+  --muted:#8B6E5A; --light:#D4B8AC;
+  --green:#065f46; --green-bg:#d1fae5; --green-b:#6ee7b7;
+  --red:#991b1b;   --red-bg:#fee2e2;   --red-b:#fca5a5;
+  --amber:#92400e; --amber-bg:#fef3c7; --amber-b:#fcd34d;
+  --purple:#4c1d95;--purple-bg:#ede9fe;--purple-b:#c4b5fd;
+  --blue:#1e40af;  --blue-bg:#dbeafe;  --blue-b:#93c5fd;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+.header{background:var(--bg);border-bottom:2px solid var(--gold);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;}
+.logo{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:-0.5px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.user-selector{background:var(--card);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;outline:none;}
+.user-selector:focus{border-color:var(--gold);}
+.nav{background:var(--bg);padding:0 28px;display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto;}
+.nav-tab{padding:13px 16px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;}
+.nav-tab:hover{color:var(--ink);}
+.nav-tab.active{color:var(--gold-dark);border-bottom-color:var(--gold);}
+.main{padding:28px;max-width:1100px;margin:0 auto;}
+.page{display:none;}.page.active{display:block;}
+.page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px;}
+.page-subtitle{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:18px;box-shadow:0 2px 8px rgba(180,120,80,.07);}
+.card-title{font-size:12px;font-weight:800;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.row-nav{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+.week-btn{background:var(--card);border:1px solid var(--border);color:var(--ink);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.week-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
+.week-label{font-size:14px;font-weight:700;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.badge-unsaved{background:rgba(232,160,32,.12);color:var(--gold-dark);}
+.badge-saved{background:var(--green-bg);color:var(--green);}
+.ss-select,.ss-input{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .2s;}
+.ss-input{cursor:text;font-weight:500;}
+.ss-select:focus,.ss-input:focus{border-color:var(--gold);}
+.btn{padding:10px 20px;border-radius:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--gold);color:var(--ink);}
+.btn-primary:hover{background:var(--gold-light);box-shadow:0 3px 12px rgba(232,160,32,.3);transform:translateY(-1px);}
+.btn-secondary{background:var(--card);color:var(--ink);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold-dark);}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:7px;}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.filter-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+/* TIMESHEET */
+.timesheet-table{width:100%;border-collapse:collapse;}
+.timesheet-table th{background:var(--bg);padding:11px 12px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);}
+.timesheet-table th:first-child{text-align:left;width:170px;}
+.timesheet-table th.th-today{color:var(--gold-dark);}
+.timesheet-table td{padding:8px 8px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle;background:var(--card);}
+.timesheet-table tr:hover td{background:#fff8f3;}
+.timesheet-table tr:last-child td{border-bottom:none;}
+.totals-row td{background:var(--bg)!important;font-size:12px;font-weight:700;color:var(--muted);border-top:2px solid var(--border);}
+.day-total{color:var(--ink)!important;font-size:14px!important;}
+.grand-total{color:var(--gold-dark)!important;font-size:15px!important;}
+.row-total{font-size:14px;font-weight:700;color:var(--gold-dark);}
+.client-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;flex-shrink:0;}
+.client-picklist{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:5px 8px;border-radius:7px;cursor:pointer;outline:none;max-width:145px;}
+.client-picklist:focus{border-color:var(--gold);}
+.hours-input{width:58px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:5px 7px;border-radius:7px;text-align:center;outline:none;transition:all .2s;}
+.hours-input:focus{border-color:var(--gold);background:var(--card);box-shadow:0 0 0 3px rgba(232,160,32,.12);}
+.hours-input:hover{border-color:var(--border);}
+.remove-row-btn{background:none;border:none;color:var(--light);font-size:18px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:color .15s;}
+.remove-row-btn:hover{color:#cc3333;}
+
+/* TO-DOS */
+.todo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background .15s;}
+.todo-item:last-child{border-bottom:none;}
+.todo-item:hover{background:#fff8f3;}
+.todo-check{width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
+.todo-text{flex:1;font-size:13px;font-weight:500;}
+.todo-text.done{text-decoration:line-through;color:var(--muted);}
+.todo-due{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.todo-due.overdue{color:var(--red);}
+.todo-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;padding:1px 5px;border-radius:4px;}
+.todo-remove:hover{color:#cc3333;}
+.add-todo-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.add-todo-input{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none;}
+.add-todo-input:focus{border-color:var(--gold);}
+
+/* ROCKS */
+.rock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:12px;box-shadow:0 2px 6px rgba(180,120,80,.06);transition:border-color .2s;}
+.rock-card:hover{border-color:var(--gold);}
+.rock-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.rock-num{background:var(--gold);color:var(--ink);font-weight:800;font-size:11px;min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
+.rock-title-input{flex:1;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;padding:3px 0;outline:none;transition:border-color .2s;}
+.rock-title-input:focus{border-bottom-color:var(--gold);}
+.rock-title-input::placeholder{color:var(--light);font-weight:400;}
+.rock-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-left:36px;}
+.meta-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.rock-remove{background:none;border:none;color:var(--light);font-size:18px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:color .15s;margin-left:auto;}
+.rock-remove:hover{color:#cc3333;}
+.status-sel{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;}
+.s-on-track{background:var(--green-bg);color:var(--green);border-color:var(--green-b);}
+.s-off-track{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
+.s-blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b);}
+.s-done{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-b);}
+.rock-inline-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.rock-inline-row:last-child{border-bottom:none;}
+.rock-inline-name{flex:1;font-size:13px;font-weight:600;}
+.rock-inline-q{font-size:11px;color:var(--muted);}
+
+/* Quarter context badges */
+.quarter-badge{font-size:12px;font-weight:600;padding:10px 16px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.quarter-badge.current{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);}
+.quarter-badge.historical{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.quarter-badge.planning{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);}
+.rock-planning{border-color:var(--blue-b);}
+.rock-planning:hover{border-color:var(--blue)!important;}
+
+/* Historical rock card */
+.rock-historical{opacity:0.9;border-style:dashed;}
+.rock-historical:hover{border-color:var(--muted)!important;border-style:dashed;}
+.rock-title-locked{flex:1;font-size:15px;font-weight:700;color:var(--ink);}
+.rock-last-status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.rock-last-status.s-on-track{background:var(--green-bg);color:var(--green);border-color:var(--green-b);}
+.rock-last-status.s-off-track{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
+.rock-last-status.s-blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b);}
+.rock-last-status.s-done{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-b);}
+.lock-icon{font-size:14px;margin-left:4px;opacity:0.5;}
+
+/* ISSUES */
+.issue-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);transition:background .15s;}
+.issue-item:last-child{border-bottom:none;}
+.issue-item:hover{background:#fff8f3;}
+.issue-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;flex-shrink:0;margin-top:2px;}
+.type-issue{background:var(--red-bg);color:var(--red);}
+.type-opportunity{background:var(--green-bg);color:var(--green);}
+.type-idea{background:var(--blue-bg);color:var(--blue);}
+.issue-body{flex:1;}
+.issue-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.issue-title.resolved{text-decoration:line-through;color:var(--muted);}
+.issue-meta{font-size:11px;color:var(--muted);}
+.issue-actions{display:flex;gap:6px;align-items:center;}
+.resolve-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;transition:all .15s;}
+.resolve-btn.open-btn{background:var(--green-bg);color:var(--green);}
+.resolve-btn.open-btn:hover{background:var(--green-b);}
+.resolve-btn.reopen-btn{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.issue-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;padding:1px 4px;border-radius:3px;}
+.issue-remove:hover{color:#cc3333;}
+
+/* SCORECARD */
+.scorecard-table{width:100%;border-collapse:collapse;}
+.scorecard-table th{background:var(--bg);padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--border);}
+.scorecard-table th.num{text-align:center;}
+.scorecard-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
+.scorecard-table td.num{text-align:center;}
+.scorecard-table tr:hover td{background:#fff8f3;}
+.scorecard-table tr:last-child td{border-bottom:none;}
+.metric-name-input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:2px 0;outline:none;width:100%;transition:border-color .2s;}
+.metric-name-input:focus{border-bottom-color:var(--gold);}
+.metric-val-input{width:70px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:4px 7px;border-radius:6px;text-align:center;outline:none;transition:all .2s;}
+.metric-val-input:focus{border-color:var(--gold);background:var(--card);}
+.metric-val-input:hover{border-color:var(--border);}
+.rag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;margin-left:4px;}
+.rag-green{background:var(--green-bg);color:var(--green);}
+.rag-red{background:var(--red-bg);color:var(--red);}
+.rag-grey{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+
+/* VISION */
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:700px){.vision-grid{grid-template-columns:1fr;}}
+.vision-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.vision-item:last-child{border-bottom:none;}
+.vision-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.vision-textarea{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;padding:4px 0;outline:none;resize:none;transition:border-color .2s;line-height:1.6;}
+.vision-textarea:focus{border-bottom-color:var(--gold);}
+.vision-textarea::placeholder{color:var(--light);}
+.goal-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.goal-item:last-child{border-bottom:none;}
+.goal-num{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.goal-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:3px 0;outline:none;transition:border-color .2s;}
+.goal-input:focus{border-bottom-color:var(--gold);}
+.goal-input::placeholder{color:var(--light);font-weight:400;}
+.goal-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;}
+.goal-remove:hover{color:#cc3333;}
+
+/* MONTHLY */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-bottom:22px;}
+.summary-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 2px 6px rgba(180,120,80,.06);transition:border-color .2s;}
+.summary-card:hover{border-color:var(--gold);}
+.summary-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.summary-value{font-size:26px;font-weight:800;color:var(--gold-dark);letter-spacing:-1px;line-height:1;margin-bottom:3px;}
+.summary-sub{font-size:11px;color:var(--muted);}
+.invoice-table{width:100%;border-collapse:collapse;}
+.invoice-table th{background:var(--bg);padding:11px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);}
+.invoice-table th:last-child,.invoice-table td:last-child{text-align:right;}
+.invoice-table td{padding:13px 14px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
+.invoice-table tr:hover td{background:#fff8f3;}
+.invoice-table tr:last-child td{border-bottom:none;}
+.member-tag{display:inline-block;background:var(--bg);color:var(--ink);font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:2px;}
+
+/* SETTINGS */
+.settings-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg);border-radius:9px;border:1px solid var(--border);}
+.settings-item-name{font-size:13px;font-weight:600;flex:1;}
+.settings-remove{background:none;border:none;color:var(--light);font-size:17px;cursor:pointer;padding:2px 5px;border-radius:3px;}
+.settings-remove:hover{color:#cc3333;}
+.settings-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.add-row-ctrl{display:flex;gap:8px;}
+
+.toast{position:fixed;bottom:28px;right:28px;background:var(--gold);color:var(--ink);padding:13px 22px;border-radius:12px;font-weight:700;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+@media(max-width:700px){.main{padding:14px;}.header,.nav{padding:0 14px;}.hours-input{width:46px;font-size:12px;}.timesheet-table th,.timesheet-table td{padding:6px 4px;}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">SolveSimple.</div>
+  <div class="header-right">
+    <span style="font-size:12px;color:var(--muted);font-weight:600">Viewing as:</span>
+    <select class="user-selector" id="currentUser" onchange="switchUser()"></select>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-tab active"  onclick="showPage('myweek',this)">My Week</div>
+  <div class="nav-tab"         onclick="showPage('issues',this)">Issues</div>
+  <div class="nav-tab"         onclick="showPage('scorecard',this)">Scorecard</div>
+  <div class="nav-tab"         onclick="showPage('rocks',this)">🪨 Rocks</div>
+  <div class="nav-tab"         onclick="showPage('vision',this)">Vision</div>
+  <div class="nav-tab"         onclick="showPage('monthly',this)">Monthly Report</div>
+  <div class="nav-tab"         onclick="showPage('settings',this)">Settings</div>
+</nav>
+
+<main class="main">
+
+<!-- MY WEEK -->
+<div id="page-myweek" class="page active">
+  <div class="page-title">My Week</div>
+  <div class="page-subtitle" id="myweek-subtitle">Time, to-dos &amp; rocks</div>
+  <div class="row-nav">
+    <button class="week-btn" onclick="changeWeek(-1)">←</button>
+    <span class="week-label" id="week-label"></span>
+    <button class="week-btn" onclick="changeWeek(1)">→</button>
+    <span class="badge badge-unsaved" id="week-status">● Unsaved</span>
+  </div>
+
+  <div class="card" id="myweek-todos-card">
+    <div class="card-title">☑ To-Dos</div>
+    <div id="my-todos-list"></div>
+    <div class="add-todo-row" style="margin-top:14px">
+      <input class="add-todo-input" id="new-todo-text" placeholder="Add a to-do..." onkeydown="if(event.key==='Enter')addTodo()">
+      <select class="ss-select" id="new-todo-due" style="font-weight:500;font-size:12px">
+        <option value="">No due date</option>
+        <option value="today">Today</option>
+        <option value="this-week">This week</option>
+        <option value="next-week">Next week</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="addTodo()">Add</button>
+    </div>
+  </div>
+
+  <div id="my-rocks-section"></div>
+
+  <div class="card">
+    <div class="card-title">⏱ Hours Logged</div>
+    <div style="overflow-x:auto">
+      <table class="timesheet-table" id="timesheet-table"></table>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary btn-sm" onclick="addRow()">+ Add Row</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearWeek()">Clear</button>
+      <button class="btn btn-primary btn-sm" onclick="saveTimesheet()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ISSUES -->
+<div id="page-issues" class="page">
+  <div class="page-title">Issues List</div>
+  <div class="page-subtitle">Capture issues, opportunities &amp; ideas — resolve them in your Level 10</div>
+  <div class="card">
+    <div class="card-title">Add to List</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <input class="ss-input" id="new-issue-text" placeholder="Describe the issue, opportunity or idea..." style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter')addIssue()">
+      <select class="ss-select" id="new-issue-type">
+        <option value="issue">🔴 Issue</option>
+        <option value="opportunity">🟢 Opportunity</option>
+        <option value="idea">🔵 Idea</option>
+      </select>
+      <select class="ss-select" id="new-issue-owner"><option value="-1">— Owner —</option></select>
+      <button class="btn btn-primary btn-sm" onclick="addIssue()">Add</button>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-label">Show:</span>
+    <select class="ss-select" id="issues-filter" onchange="renderIssues()">
+      <option value="open">Open</option><option value="all">All</option><option value="resolved">Resolved</option>
+    </select>
+    <select class="ss-select" id="issues-owner-filter" onchange="renderIssues()"><option value="all">All owners</option></select>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden"><div id="issues-list"></div></div>
+</div>
+
+<!-- SCORECARD -->
+<div id="page-scorecard" class="page">
+  <div class="page-title">Scorecard</div>
+  <div class="page-subtitle">Weekly measurables — green means on target, red means off</div>
+  <div class="row-nav">
+    <button class="week-btn" onclick="changeScorecardWeek(-1)">←</button>
+    <span class="week-label" id="scorecard-week-label"></span>
+    <button class="week-btn" onclick="changeScorecardWeek(1)">→</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;overflow-x:auto">
+    <table class="scorecard-table" id="scorecard-table"></table>
+  </div>
+  <div class="actions">
+    <button class="btn btn-secondary btn-sm" onclick="addMetric()">+ Add Metric</button>
+    <button class="btn btn-primary btn-sm" onclick="showToast('Scorecard saved ✓')">Save</button>
+  </div>
+</div>
+
+<!-- ROCKS -->
+<div id="page-rocks" class="page">
+  <div class="page-title">🪨 90-Day Rocks</div>
+  <div class="page-subtitle">3–5 quarterly priorities — what matters most this quarter</div>
+  <div class="filter-bar">
+    <span class="filter-label">Quarter:</span>
+    <select class="ss-select" id="quarterSelect" onchange="renderRocks()"></select>
+    <button class="btn btn-primary btn-sm" onclick="addRock()" style="margin-left:auto">+ Add Rock</button>
+    <button class="btn btn-secondary btn-sm" id="setup-mode-btn" onclick="toggleSetupMode()" title="Unlock historical quarters to backdate rocks">🔧 Setup Mode</button>
+  </div>
+  <div id="setup-mode-banner" style="display:none" class="quarter-badge planning" style="margin-bottom:16px">
+    🔧 <strong>Setup Mode is ON</strong> — you can add and edit rocks in historical quarters. Turn it off when you're done to lock the record.
+    <button onclick="toggleSetupMode()" style="margin-left:auto;background:none;border:1px solid var(--blue-b);color:var(--blue);font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;cursor:pointer">Turn Off</button>
+  </div>
+  <div id="rocks-list"></div>
+</div>
+
+<!-- VISION -->
+<div id="page-vision" class="page">
+  <div class="page-title">Vision &amp; Goals</div>
+  <div class="page-subtitle">Your V/TO — what you're building and why</div>
+  <div class="vision-grid">
+    <div class="card">
+      <div class="card-title">🎯 Core Focus</div>
+      <div class="vision-item"><div class="vision-label">Core Values</div><textarea class="vision-textarea" rows="3" id="vt-corevalues" placeholder="What we stand for..." oninput="saveVision()"></textarea></div>
+      <div class="vision-item"><div class="vision-label">Core Purpose / Why we exist</div><textarea class="vision-textarea" rows="2" id="vt-corefocus" placeholder="Our reason for being..." oninput="saveVision()"></textarea></div>
+      <div class="vision-item"><div class="vision-label">Niche — what we do best</div><textarea class="vision-textarea" rows="2" id="vt-niche" placeholder="Our sweet spot..." oninput="saveVision()"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔭 Long-Range Targets</div>
+      <div class="vision-item"><div class="vision-label">5-Year Target (BHAG)</div><textarea class="vision-textarea" rows="2" id="vt-10year" placeholder="The big audacious goal..." oninput="saveVision()"></textarea></div>
+      <div class="vision-item"><div class="vision-label">3-Year Picture</div><textarea class="vision-textarea" rows="4" id="vt-3year" placeholder="Revenue, team size, what the business looks like..." oninput="saveVision()"></textarea></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">⭐ 1-Year Goals <span id="year-goal-label" style="font-weight:500;font-size:11px;margin-left:6px;color:var(--muted)"></span></div>
+    <div id="one-year-goals-list"></div>
+    <div style="margin-top:12px"><button class="btn btn-secondary btn-sm" onclick="addYearGoal()">+ Add Goal</button></div>
+  </div>
+</div>
+
+<!-- MONTHLY -->
+<div id="page-monthly" class="page">
+  <div class="page-title">Monthly Report</div>
+  <div class="page-subtitle">Days billed by client — for invoicing</div>
+  <div class="filter-bar">
+    <button class="week-btn" onclick="changeMonth(-1)">←</button>
+    <span class="week-label" id="month-label"></span>
+    <button class="week-btn" onclick="changeMonth(1)">→</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span class="filter-label">Member:</span>
+      <select class="ss-select" id="monthUserFilter" onchange="renderMonthly()"><option value="all">All members</option></select>
+    </div>
+  </div>
+  <div class="summary-grid" id="summary-cards"></div>
+  <div class="card" style="padding:0;overflow:hidden"><table class="invoice-table" id="invoice-table"></table></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <div class="page-title">Settings</div>
+  <div class="page-subtitle">Manage clients and team members</div>
+  <div class="card">
+    <div class="card-title">Clients</div>
+    <div class="settings-list" id="client-list"></div>
+    <div class="add-row-ctrl">
+      <input class="ss-input" id="new-client" placeholder="Client name..." onkeydown="if(event.key==='Enter')addClient()">
+      <button class="btn btn-primary btn-sm" onclick="addClient()">Add</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Team Members</div>
+    <div class="settings-list" id="member-list"></div>
+    <div class="add-row-ctrl">
+      <input class="ss-input" id="new-member" placeholder="Team member name..." onkeydown="if(event.key==='Enter')addMember()">
+      <button class="btn btn-primary btn-sm" onclick="addMember()">Add</button>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const CLIENT_COLOURS=['#E8A020','#4ECDC4','#A78BFA','#F87171','#34D399','#60A5FA','#FBBF24','#F472B6'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['Mon','Tue','Wed','Thu','Fri'];
+
+let state=JSON.parse(localStorage.getItem('ss_eos')||'null')||{
+  clients:['Brickworks','Manildra','RWTS','Balanced Effect','Master Builders NSW'],
+  members:['Dan Godden','Theresa Jackson','Team Member 3'],
+  timesheet:{},rows:[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}],
+  rocks:[],todos:[],issues:[],scorecard:[],
+  scorecardWeekOffset:0,vision:{},yearGoals:[],
+  currentUser:0,currentWeekOffset:0,currentMonthOffset:0,
+};
+if(!state.rows)               state.rows=[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];
+if(!state.rocks)              state.rocks=[];
+if(!state.todos)              state.todos=[];
+if(!state.issues)             state.issues=[];
+if(!state.scorecard)          state.scorecard=[];
+if(state.scorecardWeekOffset===undefined) state.scorecardWeekOffset=0;
+if(!state.vision)             state.vision={};
+if(!state.yearGoals)          state.yearGoals=[];
+function save(){localStorage.setItem('ss_eos',JSON.stringify(state));}
+
+// NAV
+function showPage(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
+  ({monthly:renderMonthly,settings:renderSettings,rocks:renderRocks,issues:renderIssues,scorecard:renderScorecard,vision:renderVision})[page]?.();
+}
+
+// DATE HELPERS
+function getMondayOfWeek(offset){const now=new Date(),day=now.getDay(),diff=day===0?-6:1-day,mon=new Date(now);mon.setDate(now.getDate()+diff+offset*7);mon.setHours(0,0,0,0);return mon;}
+function getWeekDates(offset){const mon=getMondayOfWeek(offset);return Array.from({length:5},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});}
+function dateKey(d){return d.toISOString().slice(0,10);}
+function weekKey(offset){return dateKey(getMondayOfWeek(offset));}
+function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth()&&d.getFullYear()===t.getFullYear();}
+
+// USER
+function setupUserSelector(){document.getElementById('currentUser').innerHTML=state.members.map((m,i)=>`<option value="${i}" ${i===state.currentUser?'selected':''}>${m}</option>`).join('');}
+function switchUser(){state.currentUser=parseInt(document.getElementById('currentUser').value);save();renderMyWeek();}
+
+// MY WEEK
+function changeWeek(dir){state.currentWeekOffset+=dir;save();renderMyWeek();}
+function renderMyWeek(){
+  const dates=getWeekDates(state.currentWeekOffset);
+  const mon=dates[0],fri=dates[4];
+  document.getElementById('week-label').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${fri.getDate()} ${MONTHS[fri.getMonth()].slice(0,3)} ${fri.getFullYear()}`;
+  document.getElementById('myweek-subtitle').textContent=`${state.members[state.currentUser]} — week at a glance`;
+  renderTodos();renderMyRocks();renderTimesheetTable();
+}
+
+// TO-DOS
+function addTodo(){
+  const text=document.getElementById('new-todo-text').value.trim();if(!text)return;
+  const due=document.getElementById('new-todo-due').value;
+  state.todos.push({id:Date.now(),text,ownerIdx:state.currentUser,due,done:false,doneAt:null});
+  document.getElementById('new-todo-text').value='';
+  save();renderTodos();
+}
+function toggleTodo(id){const t=state.todos.find(t=>t.id===id);if(t){t.done=!t.done;t.doneAt=t.done?new Date().toISOString():null;}save();renderTodos();}
+function removeTodo(id){state.todos=state.todos.filter(t=>t.id!==id);save();renderTodos();}
+const DUE_ORDER={'today':0,'this-week':1,'next-week':2,'':3};
+const DUE_LABEL={'today':'Today','this-week':'This week','next-week':'Next week'};
+function renderTodos(){
+  const my=state.todos.filter(t=>t.ownerIdx===state.currentUser)
+    .sort((a,b)=>a.done!==b.done?(a.done?1:-1):(DUE_ORDER[a.due]??3)-(DUE_ORDER[b.due]??3));
+  const el=document.getElementById('my-todos-list');
+  if(!my.length){el.innerHTML=`<div style="padding:8px 0;color:var(--muted);font-size:13px">No to-dos yet — add one below.</div>`;return;}
+  el.innerHTML=my.map(t=>`<div class="todo-item">
+    <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleTodo(${t.id})">
+    <span class="todo-text ${t.done?'done':''}">${t.text}</span>
+    ${t.due?`<span class="todo-due ${t.due==='today'&&!t.done?'overdue':''}">${DUE_LABEL[t.due]||''}</span>`:''}
+    <button class="todo-remove" onclick="removeTodo(${t.id})">×</button>
+  </div>`).join('');
+}
+
+// TIMESHEET
+function getTimesheetKey(ui,wo){return `${ui}_${weekKey(wo)}`;}
+function renderTimesheetTable(){
+  const dates=getWeekDates(state.currentWeekOffset);
+  const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
+  const data=state.timesheet[tk]||{};
+  let html='<thead><tr><th>Client</th>';
+  dates.forEach((d,i)=>html+=`<th class="${isToday(d)?'th-today':''}">${DAYS[i]}<br><span style="font-size:10px;font-weight:500;opacity:.7">${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}</span></th>`);
+  html+='<th>Total</th><th></th></tr></thead><tbody>';
+  state.rows.forEach((row,ri)=>{
+    const ci=row.clientIdx,colour=ci>=0?CLIENT_COLOURS[ci%CLIENT_COLOURS.length]:'#ccc';
+    const opts=`<option value="-1" ${ci===-1?'selected':''}>— Select —</option>`+state.clients.map((c,i)=>`<option value="${i}" ${ci===i?'selected':''}>${c}</option>`).join('');
+    let rowTotal=0,cells='';
+    dates.forEach((_,di)=>{const v=data[`${ri}_${di}`]||'';if(v)rowTotal+=parseFloat(v)||0;cells+=`<td><input class="hours-input" type="number" min="0" max="24" step="0.5" value="${v}" placeholder="—" onchange="updateHours(${ri},${di},this.value)" onfocus="this.select()"></td>`;});
+    html+=`<tr><td><div style="display:flex;align-items:center;gap:7px"><span class="client-dot" style="background:${colour}"></span><select class="client-picklist" onchange="updateRowClient(${ri},this.value)">${opts}</select></div></td>${cells}<td class="row-total">${rowTotal>0?rowTotal+'h':'—'}</td><td><button class="remove-row-btn" onclick="removeRow(${ri})">×</button></td></tr>`;
+  });
+  html+='<tr class="totals-row"><td>TOTAL</td>';
+  let grand=0;
+  for(let di=0;di<5;di++){let day=0;state.rows.forEach((_,ri)=>day+=parseFloat(data[`${ri}_${di}`]||0));grand+=day;html+=`<td class="day-total">${day>0?day+'h':'—'}</td>`;}
+  html+=`<td class="grand-total">${grand>0?grand+'h':'—'}</td><td></td></tr></tbody>`;
+  document.getElementById('timesheet-table').innerHTML=html;
+  const saved=state.timesheet['saved_'+tk];
+  const badge=document.getElementById('week-status');
+  badge.className='badge '+(saved?'badge-saved':'badge-unsaved');
+  badge.textContent=saved?'✓ Saved':'● Unsaved';
+}
+function updateRowClient(ri,val){state.rows[ri].clientIdx=parseInt(val);save();renderTimesheetTable();}
+function addRow(){state.rows.push({clientIdx:-1});save();renderTimesheetTable();}
+function removeRow(ri){if(state.rows.length<=1)return;state.rows.splice(ri,1);save();renderTimesheetTable();}
+function updateHours(ri,di,val){
+  const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
+  if(!state.timesheet[tk])state.timesheet[tk]={};
+  if(!val)delete state.timesheet[tk][`${ri}_${di}`];else state.timesheet[tk][`${ri}_${di}`]=val;
+  state.timesheet['saved_'+tk]=false;save();renderTimesheetTable();
+}
+function saveTimesheet(){state.timesheet['saved_'+getTimesheetKey(state.currentUser,state.currentWeekOffset)]=true;save();renderTimesheetTable();showToast('Timesheet saved ✓');}
+function clearWeek(){const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);state.timesheet[tk]={};state.timesheet['saved_'+tk]=false;state.rows=[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];save();renderTimesheetTable();}
+
+// ROCKS
+const STATUS_CFG={'':{ label:'— Set status —',cls:''},'on-track':{label:'✅ On Track',cls:'s-on-track'},'off-track':{label:'⚠️ Off Track',cls:'s-off-track'},'blocked':{label:'🚫 Blocked',cls:'s-blocked'},'done':{label:'✓ Done',cls:'s-done'}};
+
+// Australian FY: Jul-Sep = Q1, Oct-Dec = Q2, Jan-Mar = Q3, Apr-Jun = Q4
+// FY label: July 2025–June 2026 = FY25/26
+function getFYQuarter(date) {
+  const m = date.getMonth(); // 0=Jan, 6=Jul
+  const y = date.getFullYear();
+  // Which quarter?
+  // Q1: Jul(6),Aug(7),Sep(8)  → fyStart = y
+  // Q2: Oct(9),Nov(10),Dec(11) → fyStart = y
+  // Q3: Jan(0),Feb(1),Mar(2)  → fyStart = y-1
+  // Q4: Apr(3),May(4),Jun(5)  → fyStart = y-1
+  let q, fyStart;
+  if      (m >= 6 && m <= 8)  { q = 1; fyStart = y; }
+  else if (m >= 9 && m <= 11) { q = 2; fyStart = y; }
+  else if (m >= 0 && m <= 2)  { q = 3; fyStart = y - 1; }
+  else                         { q = 4; fyStart = y - 1; }
+  const fyLabel = `${String(fyStart).slice(2)}/${String(fyStart+1).slice(2)}`;
+  return `Q${q} FY${fyLabel}`;
+}
+function getCurrentQuarter() { return getFYQuarter(new Date()); }
+
+// Only show quarters from Q1 FY25/26 onwards, plus the next upcoming quarter
+function getQuarterOptions() {
+  const opts = [];
+  const now = new Date();
+  // Start point: Q1 FY25/26 = July 2025
+  const startDate = new Date(2025, 6, 1); // July 2025
+  // End point: one quarter ahead of today
+  const nextQDate = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+
+  let d = new Date(startDate);
+  while (d <= nextQDate) {
+    opts.push(getFYQuarter(d));
+    d = new Date(d.getFullYear(), d.getMonth() + 3, 1);
+  }
+  // Deduplicate while preserving order
+  return [...new Set(opts)];
+}
+function getCurrentFYLabel() {
+  const now = new Date(), m = now.getMonth();
+  const fyStart = m >= 6 ? now.getFullYear() : now.getFullYear() - 1;
+  return `${String(fyStart).slice(2)}/${String(fyStart+1).slice(2)}`;
+}
+function setupQuarterSelect(){
+  const sel=document.getElementById('quarterSelect');if(!sel)return;
+  const opts=getQuarterOptions(),cur=getCurrentQuarter();
+  const nextQ=opts[opts.length-1]!==cur?opts[opts.length-1]:null;
+  // Preserve existing selection if valid, otherwise default to current
+  const existing=sel.value;
+  const keepVal=existing&&opts.includes(existing)?existing:cur;
+  sel.innerHTML=opts.map(q=>{
+    let label=q;
+    if(q===cur)        label=`${q}  ← current`;
+    else if(q===nextQ) label=`${q}  (planning)`;
+    return `<option value="${q}" ${q===keepVal?'selected':''}>${label}</option>`;
+  }).join('');
+}
+function getSelectedQuarter(){const s=document.getElementById('quarterSelect');return s?s.value:getCurrentQuarter();}
+
+function getQuarterIndex(q){return getQuarterOptions().indexOf(q);}
+function isHistoricalQuarter(q){return getQuarterIndex(q)<getQuarterIndex(getCurrentQuarter());}
+function isNextQuarter(q){return getQuarterIndex(q)>getQuarterIndex(getCurrentQuarter());}
+
+// Setup mode — allows backdating rocks into historical quarters
+let setupMode = false;
+function toggleSetupMode() {
+  setupMode = !setupMode;
+  const btn = document.getElementById('setup-mode-btn');
+  const banner = document.getElementById('setup-mode-banner');
+  if (btn) {
+    btn.textContent = setupMode ? '🔒 Lock History' : '🔧 Setup Mode';
+    btn.className = setupMode ? 'btn btn-sm' : 'btn btn-secondary btn-sm';
+    if (setupMode) { btn.style.background='var(--amber-bg)'; btn.style.color='var(--amber)'; btn.style.border='1px solid var(--amber-b)'; }
+    else { btn.style.background=''; btn.style.color=''; btn.style.border=''; }
+  }
+  if (banner) banner.style.display = setupMode ? 'flex' : 'none';
+  renderRocks();
+}
+
+function addRock(){
+  if(isHistoricalQuarter(getSelectedQuarter()) && !setupMode){showToast('Turn on Setup Mode to add rocks to a past quarter');return;}
+  state.rocks.push({id:Date.now(),title:'',ownerIdx:-1,quarter:getSelectedQuarter(),weeklyStatus:{},finalStatus:''});
+  save();renderRocks();setTimeout(()=>{const ins=document.querySelectorAll('.rock-title-input');if(ins.length)ins[ins.length-1].focus();},60);
+}
+function updateRockTitle(id,val){const r=state.rocks.find(r=>r.id===id);if(r){r.title=val;save();renderMyRocks();}}
+function updateRockOwner(id,val){const r=state.rocks.find(r=>r.id===id);if(r){r.ownerIdx=parseInt(val);save();renderMyRocks();}}
+function updateRockStatus(id,val){
+  const r=state.rocks.find(r=>r.id===id);if(!r)return;
+  const wk=weekKey(state.currentWeekOffset);if(!r.weeklyStatus)r.weeklyStatus={};r.weeklyStatus[wk]=val;
+  const sel=document.getElementById(`rstatus-${id}`);if(sel)sel.className='status-sel '+(STATUS_CFG[val]?.cls||'');
+  save();
+}
+function setFinalStatus(id,val){
+  const r=state.rocks.find(r=>r.id===id);if(!r)return;
+  r.finalStatus=val;save();renderRocks();
+}
+
+function renderRocks(){
+  setupQuarterSelect();
+  const q=getSelectedQuarter(),rocks=state.rocks.filter(r=>r.quarter===q),list=document.getElementById('rocks-list');
+  if(!list)return;
+
+  const historical=isHistoricalQuarter(q);
+  const planning=isNextQuarter(q);
+  const isCurrent=!historical&&!planning;
+
+  let bannerHtml='';
+  if(isCurrent)     bannerHtml=`<div class="quarter-badge current">✅ Current quarter — update each rock's status weekly.</div>`;
+  else if(planning) bannerHtml=`<div class="quarter-badge planning">📋 Planning mode — set up your rocks for next quarter. Status tracking begins when the quarter starts.</div>`;
+  else              bannerHtml=`<div class="quarter-badge historical">📦 Historical — this quarter is closed. Set a final outcome for each rock below.</div>`;
+
+  if(!rocks.length){
+    const msg=historical?`No rocks recorded for ${q}.`:planning?`No rocks planned for ${q} yet — get ahead and add them now.`:`No rocks set for ${q}. Click <strong>+ Add Rock</strong> to get started.`;
+    list.innerHTML=bannerHtml+`<div class="empty-state" style="background:var(--card);border:1px solid var(--border);border-radius:12px">${msg}</div>`;
+    return;
+  }
+
+  const wk=weekKey(state.currentWeekOffset);
+  list.innerHTML=bannerHtml+rocks.map((rock,idx)=>{
+    const ownerName=rock.ownerIdx>=0?state.members[rock.ownerIdx]:'Unassigned';
+    const ownerOpts=`<option value="-1" ${rock.ownerIdx===-1?'selected':''}>— Assign owner —</option>`+state.members.map((m,i)=>`<option value="${i}" ${rock.ownerIdx===i?'selected':''}>${m}</option>`).join('');
+
+    if(historical && !setupMode){
+      const fs=rock.finalStatus||'',fsCls=STATUS_CFG[fs]?.cls||'';
+      const fsOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${fs===v?'selected':''}>${c.label}</option>`).join('');
+      const lastWk=Object.keys(rock.weeklyStatus||{}).sort().pop();
+      const lastStatus=lastWk?rock.weeklyStatus[lastWk]:'';
+      return `<div class="rock-card rock-historical">
+        <div class="rock-header">
+          <div class="rock-num" style="background:var(--muted)">${idx+1}</div>
+          <span class="rock-title-locked">${rock.title||'<em style="color:var(--light)">Untitled</em>'}</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:auto;flex-shrink:0">${ownerName}</span>
+        </div>
+        <div class="rock-meta">
+          <span class="meta-label">Last status</span>
+          <span class="rock-last-status ${STATUS_CFG[lastStatus]?.cls||''}">${lastStatus?STATUS_CFG[lastStatus].label:'No updates recorded'}</span>
+          <span class="meta-label" style="margin-left:14px">Final outcome</span>
+          <select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select>
+          <span class="lock-icon">🔒</span>
+        </div>
+      </div>`;
+    } else if(historical && setupMode){
+      // Setup mode: historical but fully editable
+      const fs=rock.finalStatus||'',fsCls=STATUS_CFG[fs]?.cls||'';
+      const fsOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${fs===v?'selected':''}>${c.label}</option>`).join('');
+      return `<div class="rock-card" style="border-color:var(--amber-b);border-style:dashed">
+        <div class="rock-header">
+          <div class="rock-num" style="background:var(--amber)">${idx+1}</div>
+          <input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)">
+          <button class="rock-remove" onclick="removeRock(${rock.id})">×</button>
+        </div>
+        <div class="rock-meta">
+          <span class="meta-label">Owner</span>
+          <select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select>
+          <span class="meta-label" style="margin-left:14px">Final outcome</span>
+          <select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select>
+          <span style="font-size:11px;color:var(--amber);font-weight:700;margin-left:8px">🔧 editing</span>
+        </div>
+      </div>`;
+    } else {
+      const rockStatus=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[rockStatus]?.cls||'';
+      const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${rockStatus===v?'selected':''}>${c.label}</option>`).join('');
+      return `<div class="rock-card ${planning?'rock-planning':''}">
+        <div class="rock-header">
+          <div class="rock-num" ${planning?'style="background:var(--blue-bg);color:var(--blue)"':''}>${idx+1}</div>
+          <input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)">
+          <button class="rock-remove" onclick="removeRock(${rock.id})">×</button>
+        </div>
+        <div class="rock-meta">
+          <span class="meta-label">Owner</span>
+          <select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select>
+          ${isCurrent
+            ? `<span class="meta-label" style="margin-left:10px">This week's status</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select>`
+            : `<span style="font-size:11px;color:var(--blue);font-weight:600;margin-left:12px">Ready to go when Q4 begins</span>`}
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+function renderMyRocks(){
+  const sec=document.getElementById('my-rocks-section');if(!sec)return;
+  const cur=getCurrentQuarter();
+  // Only show rocks for the current quarter on My Week — not planning rocks
+  const my=state.rocks.filter(r=>r.ownerIdx===state.currentUser&&r.title.trim()&&r.quarter===cur);
+  if(!my.length){sec.innerHTML='';return;}
+  const wk=weekKey(state.currentWeekOffset);
+  sec.innerHTML=`<div class="card"><div class="card-title">🪨 My Rocks</div>${my.map(rock=>{const curStatus=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[curStatus]?.cls||'';const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${curStatus===v?'selected':''}>${c.label}</option>`).join('');return `<div class="rock-inline-row"><span style="font-size:15px">🪨</span><span class="rock-inline-name">${rock.title}</span><span class="rock-inline-q">${rock.quarter}</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select></div>`;}).join('')}</div>`;
+}
+
+// ISSUES
+const TYPE_CFG={issue:{label:'Issue',cls:'type-issue'},opportunity:{label:'Opportunity',cls:'type-opportunity'},idea:{label:'Idea',cls:'type-idea'}};
+function setupIssueOwnerSelects(){
+  const opts=`<option value="-1">— Owner —</option>`+state.members.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  const el=document.getElementById('new-issue-owner');if(el)el.innerHTML=opts;
+  const f=document.getElementById('issues-owner-filter');if(f)f.innerHTML=`<option value="all">All owners</option>`+state.members.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+}
+function addIssue(){
+  const text=document.getElementById('new-issue-text').value.trim();if(!text)return;
+  state.issues.push({id:Date.now(),text,type:document.getElementById('new-issue-type').value,ownerIdx:parseInt(document.getElementById('new-issue-owner').value),resolved:false,createdAt:new Date().toISOString()});
+  document.getElementById('new-issue-text').value='';save();renderIssues();
+}
+function toggleIssue(id){const i=state.issues.find(i=>i.id===id);if(i)i.resolved=!i.resolved;save();renderIssues();}
+function removeIssue(id){state.issues=state.issues.filter(i=>i.id!==id);save();renderIssues();}
+function renderIssues(){
+  setupIssueOwnerSelects();
+  const filter=(document.getElementById('issues-filter')||{}).value||'open';
+  const ownerF=(document.getElementById('issues-owner-filter')||{}).value||'all';
+  const issues=[...state.issues].filter(i=>{
+    if(filter==='open'&&i.resolved)return false;
+    if(filter==='resolved'&&!i.resolved)return false;
+    if(ownerF!=='all'&&i.ownerIdx!==parseInt(ownerF))return false;
+    return true;
+  }).sort((a,b)=>a.resolved===b.resolved?new Date(b.createdAt)-new Date(a.createdAt):a.resolved?1:-1);
+  const list=document.getElementById('issues-list');
+  if(!issues.length){list.innerHTML=`<div class="empty-state">No issues found.</div>`;return;}
+  list.innerHTML=issues.map(iss=>{
+    const tc=TYPE_CFG[iss.type]||TYPE_CFG.issue,owner=iss.ownerIdx>=0?state.members[iss.ownerIdx]:'Unassigned',date=new Date(iss.createdAt).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+    return `<div class="issue-item"><span class="issue-type ${tc.cls}">${tc.label}</span><div class="issue-body"><div class="issue-title ${iss.resolved?'resolved':''}">${iss.text}</div><div class="issue-meta">${owner} · ${date}</div></div><div class="issue-actions"><button class="resolve-btn ${iss.resolved?'reopen-btn':'open-btn'}" onclick="toggleIssue(${iss.id})">${iss.resolved?'Reopen':'✓ Resolve'}</button><button class="issue-remove" onclick="removeIssue(${iss.id})">×</button></div></div>`;
+  }).join('');
+}
+
+// SCORECARD
+function changeScorecardWeek(dir){state.scorecardWeekOffset+=dir;save();renderScorecard();}
+function addMetric(){state.scorecard.push({id:Date.now(),name:'',target:'',unit:'',ownerIdx:-1,values:{}});save();renderScorecard();setTimeout(()=>{const ins=document.querySelectorAll('.metric-name-input');if(ins.length)ins[ins.length-1].focus();},60);}
+function removeMetric(id){state.scorecard=state.scorecard.filter(m=>m.id!==id);save();renderScorecard();}
+function updateMetricName(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.name=val;save();}}
+function updateMetricTarget(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.target=val;save();renderScorecard();}}
+function updateMetricOwner(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.ownerIdx=parseInt(val);save();}}
+function updateMetricValue(id,wk,val){const m=state.scorecard.find(m=>m.id===id);if(!m)return;if(!m.values)m.values={};if(!val)delete m.values[wk];else m.values[wk]=val;save();renderScorecard();}
+function rag(actual,target){if(actual===''||actual===undefined||actual===null)return 'grey';const a=parseFloat(actual),t=parseFloat(target);if(isNaN(a)||isNaN(t)||t===0)return 'grey';return a>=t?'green':'red';}
+function renderScorecard(){
+  const weeks=[];for(let i=-4;i<=0;i++){const d=getMondayOfWeek(state.scorecardWeekOffset+i);weeks.push({label:`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}`,key:weekKey(state.scorecardWeekOffset+i)});}
+  const dates=getWeekDates(state.scorecardWeekOffset),mon=dates[0],fri=dates[4];
+  document.getElementById('scorecard-week-label').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${fri.getDate()} ${MONTHS[fri.getMonth()].slice(0,3)} ${fri.getFullYear()}`;
+  const table=document.getElementById('scorecard-table');
+  if(!state.scorecard.length){table.innerHTML=`<tr><td colspan="9"><div class="empty-state">No metrics yet. Click <strong>+ Add Metric</strong> to start tracking.</div></td></tr>`;return;}
+  let html=`<thead><tr><th style="min-width:150px">Metric</th><th class="num" style="min-width:90px">Owner</th><th class="num">Target</th>${weeks.map(w=>`<th class="num" style="font-size:10px;min-width:80px">${w.label}</th>`).join('')}<th class="num">Trend</th><th></th></tr></thead><tbody>`;
+  state.scorecard.forEach(m=>{
+    const ownerOpts=`<option value="-1" ${m.ownerIdx===-1?'selected':''}>—</option>`+state.members.map((mem,i)=>`<option value="${i}" ${m.ownerIdx===i?'selected':''}>${mem.split(' ')[0]}</option>`).join('');
+    const cells=weeks.map(w=>{const v=m.values?.[w.key]??'',r=rag(v,m.target),ragHtml=v!==''?`<span class="rag rag-${r}">${r==='green'?'✓':'✗'}</span>`:'';return `<td class="num"><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input class="metric-val-input" type="number" value="${v}" placeholder="—" onchange="updateMetricValue(${m.id},'${w.key}',this.value)" onfocus="this.select()">${ragHtml}</div></td>`;}).join('');
+    const vals=weeks.map(w=>parseFloat(m.values?.[w.key]??'')).filter(v=>!isNaN(v));let trend='—';if(vals.length>=2){const l=vals[vals.length-1],p=vals[vals.length-2];trend=l>p?'↑':l<p?'↓':'→';}
+    html+=`<tr><td><input class="metric-name-input" type="text" value="${m.name}" placeholder="Metric name..." oninput="updateMetricName(${m.id},this.value)"></td><td class="num"><select class="ss-select" style="font-size:11px;padding:4px 8px" onchange="updateMetricOwner(${m.id},this.value)">${ownerOpts}</select></td><td class="num"><input class="metric-val-input" type="text" value="${m.target}" placeholder="Target" onchange="updateMetricTarget(${m.id},this.value)" onfocus="this.select()"></td>${cells}<td class="num" style="font-size:18px;font-weight:700;color:var(--gold-dark)">${trend}</td><td><button class="remove-row-btn" onclick="removeMetric(${m.id})">×</button></td></tr>`;
+  });
+  table.innerHTML=html+'</tbody>';
+}
+
+// VISION
+function saveVision(){['corevalues','corefocus','niche','10year','3year'].forEach(k=>{const el=document.getElementById('vt-'+k);if(el)state.vision[k]=el.value;});save();}
+function addYearGoal(){state.yearGoals.push({id:Date.now(),text:''});save();renderYearGoals();setTimeout(()=>{const ins=document.querySelectorAll('.goal-input');if(ins.length)ins[ins.length-1].focus();},60);}
+function removeYearGoal(id){state.yearGoals=state.yearGoals.filter(g=>g.id!==id);save();renderYearGoals();}
+function updateYearGoal(id,val){const g=state.yearGoals.find(g=>g.id===id);if(g){g.text=val;save();}}
+function renderYearGoals(){
+  const list=document.getElementById('one-year-goals-list');if(!list)return;
+  if(!state.yearGoals.length){list.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:8px 0">No goals yet — add your 1-year goals below.</div>`;return;}
+  list.innerHTML=state.yearGoals.map((g,i)=>`<div class="goal-item"><div class="goal-num">${i+1}</div><input class="goal-input" type="text" value="${g.text}" placeholder="e.g. Revenue of $1.2M this year..." oninput="updateYearGoal(${g.id},this.value)"><button class="goal-remove" onclick="removeYearGoal(${g.id})">×</button></div>`).join('');
+}
+function renderVision(){['corevalues','corefocus','niche','10year','3year'].forEach(k=>{const el=document.getElementById('vt-'+k);if(el)el.value=state.vision[k]||'';});document.getElementById('year-goal-label').textContent=`(FY ${getCurrentFYLabel()})`;renderYearGoals();}
+
+// MONTHLY
+function changeMonth(dir){state.currentMonthOffset+=dir;save();renderMonthly();}
+function getMonthYear(o){const now=new Date(),d=new Date(now.getFullYear(),now.getMonth()+o,1);return{month:d.getMonth(),year:d.getFullYear()};}
+function toDays(h){if(h<=0)return 0;return Math.ceil((h/8)*2)/2;}
+function renderMonthly(){
+  const{month,year}=getMonthYear(state.currentMonthOffset);
+  document.getElementById('month-label').textContent=`${MONTHS[month]} ${year}`;
+  const fSel=document.getElementById('monthUserFilter'),cf=fSel.value;
+  fSel.innerHTML=`<option value="all">All members</option>`+state.members.map((m,i)=>`<option value="${i}" ${cf==i?'selected':''}>${m}</option>`).join('');
+  const fv=fSel.value;
+  const ch={};state.clients.forEach((_,ci)=>{ch[ci]={total:0,members:{}};state.members.forEach((_,mi)=>ch[ci].members[mi]=0);});
+  const dim=new Date(year,month+1,0).getDate();
+  for(let day=1;day<=dim;day++){const d=new Date(year,month,day);if(d.getDay()!==1)continue;
+    const ms=fv==='all'?state.members.map((_,i)=>i):[parseInt(fv)];
+    ms.forEach(mi=>{const tk=`${mi}_${dateKey(d)}`,data=state.timesheet[tk]||{};state.rows.forEach((row,ri)=>{const ci=row.clientIdx;if(ci<0)return;for(let di=0;di<5;di++){const wd=new Date(d);wd.setDate(d.getDate()+di);if(wd.getMonth()===month&&wd.getFullYear()===year){const v=parseFloat(data[`${ri}_${di}`]||0);ch[ci].total+=v;ch[ci].members[mi]+=v;}}});});
+  }
+  let totalH=0;state.clients.forEach((_,ci)=>totalH+=ch[ci].total);const totalD=toDays(totalH);
+  const ams=fv==='all'?state.members.map((_,i)=>i):[parseInt(fv)],mt={};
+  ams.forEach(mi=>{mt[mi]=0;state.clients.forEach((_,ci)=>mt[mi]+=ch[ci].members[mi]);});
+  document.getElementById('summary-cards').innerHTML=
+    `<div class="summary-card"><div class="summary-label">Total Days</div><div class="summary-value">${totalD||'—'}</div><div class="summary-sub">${totalH}h across all clients</div></div>`+
+    `<div class="summary-card"><div class="summary-label">Active Clients</div><div class="summary-value">${state.clients.filter((_,ci)=>ch[ci].total>0).length}</div><div class="summary-sub">this month</div></div>`+
+    ams.map(mi=>`<div class="summary-card"><div class="summary-label">${state.members[mi]}</div><div class="summary-value">${toDays(mt[mi])||'—'}</div><div class="summary-sub">${mt[mi]}h logged</div></div>`).join('');
+  const cwh=state.clients.map((c,ci)=>({name:c,ci,totalH:ch[ci].total,totalD:toDays(ch[ci].total),members:ch[ci].members,colour:CLIENT_COLOURS[ci%CLIENT_COLOURS.length]})).filter(c=>c.totalH>0).sort((a,b)=>b.totalD-a.totalD);
+  if(!cwh.length){document.getElementById('invoice-table').innerHTML=`<tr><td><div class="empty-state">No hours logged this month.</div></td></tr>`;return;}
+  let tHtml=`<thead><tr><th>Client</th><th>Team breakdown</th><th style="text-align:right">Hours</th><th style="text-align:right">Days (invoiced)</th></tr></thead><tbody>`;
+  cwh.forEach(c=>{const bd=ams.filter(mi=>c.members[mi]>0).map(mi=>`<span class="member-tag">${state.members[mi]}: ${toDays(c.members[mi])}d <span style="opacity:.6;font-weight:500">(${c.members[mi]}h)</span></span>`).join(' ');tHtml+=`<tr><td><span class="client-dot" style="background:${c.colour};width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle"></span><strong>${c.name}</strong></td><td>${bd||'<span style="color:var(--muted);font-size:12px">—</span>'}</td><td style="text-align:right;color:var(--muted);font-weight:600">${c.totalH}h</td><td style="text-align:right;font-weight:800;font-size:15px;color:var(--gold-dark)">${c.totalD}d</td></tr>`;});
+  tHtml+=`<tr style="border-top:2px solid var(--border);background:var(--bg)"><td style="font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px">TOTAL</td><td></td><td style="text-align:right;font-weight:700;color:var(--muted)">${totalH}h</td><td style="text-align:right;font-weight:800;font-size:17px;color:var(--gold-dark)">${totalD}d</td></tr></tbody>`;
+  document.getElementById('invoice-table').innerHTML=tHtml;
+}
+
+// SETTINGS
+function renderSettings(){
+  document.getElementById('client-list').innerHTML=state.clients.map((c,i)=>`<div class="settings-item"><span class="client-dot" style="background:${CLIENT_COLOURS[i%CLIENT_COLOURS.length]};width:10px;height:10px"></span><span class="settings-item-name">${c}</span><button class="settings-remove" onclick="removeClient(${i})">×</button></div>`).join('');
+  document.getElementById('member-list').innerHTML=state.members.map((m,i)=>`<div class="settings-item"><span class="client-dot" style="background:var(--gold);width:10px;height:10px"></span><span class="settings-item-name">${m}</span><button class="settings-remove" onclick="removeMember(${i})">×</button></div>`).join('');
+}
+function addClient(){const inp=document.getElementById('new-client'),n=inp.value.trim();if(!n)return;state.clients.push(n);inp.value='';save();renderSettings();showToast('Client added ✓');}
+function removeClient(i){if(state.clients.length<=1){showToast('Need at least one client');return;}state.clients.splice(i,1);save();renderSettings();}
+function addMember(){const inp=document.getElementById('new-member'),n=inp.value.trim();if(!n)return;state.members.push(n);inp.value='';save();renderSettings();setupUserSelector();showToast('Member added ✓');}
+function removeMember(i){if(state.members.length<=1){showToast('Need at least one member');return;}state.members.splice(i,1);if(state.currentUser>=state.members.length)state.currentUser=0;save();renderSettings();setupUserSelector();}
+
+// TOAST
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// INIT
+setupUserSelector();
+renderMyWeek();
+</script>
+</body>
+</html>
