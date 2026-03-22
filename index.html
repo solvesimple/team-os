@@ -6,20 +6,26 @@
 <title>SolveSimple. Team OS</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <!-- Microsoft Authentication Library -->
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
+<script src="https://alcdn.msauth.net/browser/2.32.2/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <script>
-// Ensure MSAL is available before app code runs
 window.addEventListener('load', function() {
   if (typeof msal === 'undefined') {
-    // Fallback CDN if primary fails
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js';
-    s.onload = function() { initAuth(); };
+    s.src = 'https://unpkg.com/@azure/msal-browser@2.32.2/lib/msal-browser.min.js';
+    s.onload = initApp;
+    s.onerror = function() { document.getElementById('login-error').style.display='block'; };
     document.head.appendChild(s);
   } else {
-    initAuth();
+    initApp();
   }
 });
+
+function initApp() {
+  // Use sessionStorage instead of localStorage to avoid Edge tracking prevention
+  MSAL_CONFIG.cache.cacheLocation = 'sessionStorage';
+  window.msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
+  initAuth();
+}
 </script>
 <style>
 :root {
@@ -265,6 +271,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
       Sign in with Microsoft
     </button>
     <p style="font-size:11px;color:var(--light);margin-top:20px">Use your @solvesimple.au account</p>
+    <p id="login-error" style="display:none;font-size:12px;color:var(--red);margin-top:16px;background:var(--red-bg);padding:10px;border-radius:8px">Could not load sign-in library. Please disable tracking prevention for this site or try a different browser.</p>
   </div>
 </div>
 
@@ -476,12 +483,13 @@ const MSAL_CONFIG = {
     authority: 'https://login.microsoftonline.com/2fc83fba-46fe-4a40-9f74-d7fbbc6fc6b1',
     redirectUri: 'https://solvesimple.github.io/team-os/',
   },
-  cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
+  cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: true }
 };
 const SCOPES = ['Files.ReadWrite', 'User.Read'];
 const ONEDRIVE_FILE = '/me/drive/root:/SolveSimple Team OS/team-os-data.json:/content';
 
-const msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+// msalInstance is created in initApp() once the MSAL library has loaded
+let msalInstance = null;
 let currentUser = null;
 let accessToken = null;
 let syncTimeout = null;
