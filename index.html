@@ -24,9 +24,15 @@ window.addEventListener('load', function() {
   }
 });
 
-function initApp() {
-  window.msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
-  initAuth();
+async function initApp() {
+  try {
+    window.msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
+    await window.msalApp.initialize();
+    await initAuth();
+  } catch(e) {
+    console.error('MSAL init error:', e);
+    document.getElementById('login-error').style.display = 'block';
+  }
 }
 </script>
 <style>
