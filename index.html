@@ -493,8 +493,43 @@ const MSAL_CONFIG = {
   },
   cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: true }
 };
-const SCOPES = ['Files.ReadWrite', 'User.Read'];
-const ONEDRIVE_FILE = '/me/drive/root:/SolveSimple Team OS/team-os-data.json:/content';
+const SCOPES = ['Files.ReadWrite', 'User.Read', 'Sites.ReadWrite.All'];
+const FILE_NAME = 'team-os-data.json';
+const FOLDER_NAME = 'SolveSimple Team OS';
+let oneDriveFileUrl = null; // resolved at runtime
+
+// Find the correct drive and file path dynamically
+async function resolveFileUrl(token) {
+  if (oneDriveFileUrl) return oneDriveFileUrl;
+  // Try personal OneDrive first
+  const personalUrl = `/me/drive/root:/${FOLDER_NAME}/${FILE_NAME}:/content`;
+  const testRes = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${FOLDER_NAME}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (testRes.ok) {
+    oneDriveFileUrl = personalUrl;
+    return oneDriveFileUrl;
+  }
+  // Fall back to finding it across all drives
+  const drivesRes = await fetch('https://graph.microsoft.com/v1.0/me/drives', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (drivesRes.ok) {
+    const drives = await drivesRes.json();
+    for (const drive of drives.value) {
+      const folderRes = await fetch(`https://graph.microsoft.com/v1.0/drives/${drive.id}/root:/${FOLDER_NAME}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (folderRes.ok) {
+        oneDriveFileUrl = `/drives/${drive.id}/root:/${FOLDER_NAME}/${FILE_NAME}:/content`;
+        return oneDriveFileUrl;
+      }
+    }
+  }
+  // Default fallback to personal OneDrive — will create folder if needed
+  oneDriveFileUrl = personalUrl;
+  return oneDriveFileUrl;
+}
 
 // msalInstance is created in initApp() once the MSAL library has loaded
 // msalApp initialized in initApp() after MSAL library loads
@@ -585,17 +620,16 @@ async function loadFromOneDrive() {
   try {
     setSyncStatus('syncing', 'Loading from OneDrive...');
     const token = await getToken();
-    const res = await fetch(`https://graph.microsoft.com/v1.0${ONEDRIVE_FILE}`, {
+    const fileUrl = await resolveFileUrl(token);
+    const res = await fetch(`https://graph.microsoft.com/v1.0${fileUrl}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (res.ok) {
       const data = await res.json();
-      // Merge loaded data into state, preserving defaults for missing keys
       Object.keys(data).forEach(k => { if (k in state) state[k] = data[k]; });
       applyMigrations();
       setSyncStatus('saved', 'All changes saved to OneDrive');
     } else if (res.status === 404) {
-      // File doesn't exist yet — first run, save defaults
       setSyncStatus('syncing', 'First run — creating OneDrive file...');
       await syncToOneDrive();
     }
@@ -609,7 +643,8 @@ async function syncToOneDrive() {
   try {
     setSyncStatus('syncing', 'Saving to OneDrive...');
     const token = await getToken();
-    const res = await fetch(`https://graph.microsoft.com/v1.0${ONEDRIVE_FILE}`, {
+    const fileUrl = await resolveFileUrl(token);
+    const res = await fetch(`https://graph.microsoft.com/v1.0${fileUrl}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(state)
