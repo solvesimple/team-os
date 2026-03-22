@@ -6,7 +6,21 @@
 <title>SolveSimple. Team OS</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <!-- Microsoft Authentication Library -->
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
+<script>
+// Ensure MSAL is available before app code runs
+window.addEventListener('load', function() {
+  if (typeof msal === 'undefined') {
+    // Fallback CDN if primary fails
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js';
+    s.onload = function() { initAuth(); };
+    document.head.appendChild(s);
+  } else {
+    initAuth();
+  }
+});
+</script>
 <style>
 :root {
   --gold:#E8A020; --gold-light:#F5B93A; --gold-dark:#C4861A;
@@ -940,9 +954,6 @@ function removeMember(i){if(state.members.length<=1){showToast('Need at least on
 
 // ===================== TOAST =====================
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-
-// ===================== INIT =====================
-initAuth();
 </script>
 </body>
 </html>
