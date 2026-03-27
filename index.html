@@ -5,25 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SolveSimple. Team OS</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<!-- Microsoft Authentication Library v2.28.1 (confirmed CDN version) -->
 <script src="https://alcdn.msauth.net/browser/2.28.1/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <script>
 window.addEventListener('load', function() {
   if (typeof msal === 'undefined') {
-    // Primary CDN failed - try unpkg fallback
     var s = document.createElement('script');
     s.src = 'https://unpkg.com/@azure/msal-browser@2.28.1/lib/msal-browser.min.js';
     s.crossOrigin = 'anonymous';
     s.onload = initApp;
-    s.onerror = function() {
-      document.getElementById('login-error').style.display = 'block';
-    };
+    s.onerror = function() { document.getElementById('login-error').style.display='block'; };
     document.head.appendChild(s);
-  } else {
-    initApp();
-  }
+  } else { initApp(); }
 });
-
 async function initApp() {
   try {
     window.msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
@@ -31,25 +24,25 @@ async function initApp() {
     await initAuth();
   } catch(e) {
     console.error('MSAL init error:', e);
-    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-error').style.display='block';
   }
 }
 </script>
 <style>
 :root {
-  --gold:#E8A020; --gold-light:#F5B93A; --gold-dark:#C4861A;
-  --ink:#1A1208; --bg:#faefe8; --card:#FFFFFF; --border:#EDD8CC;
-  --muted:#8B6E5A; --light:#D4B8AC;
-  --green:#065f46; --green-bg:#d1fae5; --green-b:#6ee7b7;
-  --red:#991b1b;   --red-bg:#fee2e2;   --red-b:#fca5a5;
-  --amber:#92400e; --amber-bg:#fef3c7; --amber-b:#fcd34d;
+  --gold:#E8A020;--gold-light:#F5B93A;--gold-dark:#C4861A;
+  --ink:#1A1208;--bg:#faefe8;--card:#FFFFFF;--border:#EDD8CC;
+  --muted:#8B6E5A;--light:#D4B8AC;
+  --green:#065f46;--green-bg:#d1fae5;--green-b:#6ee7b7;
+  --red:#991b1b;--red-bg:#fee2e2;--red-b:#fca5a5;
+  --amber:#92400e;--amber-bg:#fef3c7;--amber-b:#fcd34d;
   --purple:#4c1d95;--purple-bg:#ede9fe;--purple-b:#c4b5fd;
-  --blue:#1e40af;  --blue-bg:#dbeafe;  --blue-b:#93c5fd;
+  --blue:#1e40af;--blue-bg:#dbeafe;--blue-b:#93c5fd;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
 
-/* LOGIN SCREEN */
+/* LOGIN */
 .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;}
 .login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px;text-align:center;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(180,120,80,.12);}
 .login-logo{font-size:28px;font-weight:900;color:var(--gold);margin-bottom:8px;}
@@ -58,33 +51,39 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
 .login-btn:hover{background:var(--gold-light);box-shadow:0 4px 16px rgba(232,160,32,.3);transform:translateY(-1px);}
 .login-btn svg{width:20px;height:20px;}
 
-/* SYNC STATUS */
-.sync-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:6px 28px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:var(--muted);}
+/* SYNC BAR */
+.sync-bar{background:var(--bg);border-bottom:1px solid var(--border);padding:5px 28px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:var(--muted);}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;}
 .sync-dot.syncing{background:var(--amber);animation:pulse 1s infinite;}
 .sync-dot.error{background:var(--red);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
+/* HEADER */
 .header{background:var(--bg);border-bottom:2px solid var(--gold);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;}
 .logo{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:-0.5px;}
-.header-right{display:flex;align-items:center;gap:12px;}
-.user-chip{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.user-chip{background:var(--card);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;}
 .user-avatar{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .signout-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;}
 .signout-btn:hover{border-color:var(--red);color:var(--red);}
+.user-selector{background:var(--card);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;outline:none;}
+.user-selector:focus{border-color:var(--gold);}
 
+/* NAV */
 .nav{background:var(--bg);padding:0 28px;display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto;}
-.nav-tab{padding:13px 16px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;}
+.nav-tab{padding:12px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;text-transform:uppercase;letter-spacing:.4px;}
 .nav-tab:hover{color:var(--ink);}
 .nav-tab.active{color:var(--gold-dark);border-bottom-color:var(--gold);}
-.main{padding:28px;max-width:1100px;margin:0 auto;}
+
+/* MAIN */
+.main{padding:24px;max-width:1100px;margin:0 auto;}
 .page{display:none;}.page.active{display:block;}
 .page-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px;}
-.page-subtitle{font-size:13px;color:var(--muted);margin-bottom:24px;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:18px;box-shadow:0 2px 8px rgba(180,120,80,.07);}
-.card-title{font-size:12px;font-weight:800;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
-.row-nav{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
-.week-btn{background:var(--card);border:1px solid var(--border);color:var(--ink);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.page-subtitle{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 2px 8px rgba(180,120,80,.07);}
+.card-title{font-size:12px;font-weight:800;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.row-nav{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.week-btn{background:var(--card);border:1px solid var(--border);color:var(--ink);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .week-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
 .week-label{font-size:14px;font-weight:700;}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
@@ -93,232 +92,277 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
 .ss-select,.ss-input{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .2s;}
 .ss-input{cursor:text;font-weight:500;}
 .ss-select:focus,.ss-input:focus{border-color:var(--gold);}
-.btn{padding:10px 20px;border-radius:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn{padding:9px 18px;border-radius:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
 .btn-primary{background:var(--gold);color:var(--ink);}
 .btn-primary:hover{background:var(--gold-light);box-shadow:0 3px 12px rgba(232,160,32,.3);transform:translateY(-1px);}
 .btn-secondary{background:var(--card);color:var(--ink);border:1px solid var(--border);}
 .btn-secondary:hover{border-color:var(--gold);color:var(--gold-dark);}
-.btn-sm{padding:7px 14px;font-size:12px;border-radius:7px;}
-.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap;}
-.filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.btn-sm{padding:6px 13px;font-size:12px;border-radius:7px;}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
 .filter-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+.empty-state{text-align:center;padding:36px;color:var(--muted);font-size:14px;}
 
 /* TIMESHEET */
 .timesheet-table{width:100%;border-collapse:collapse;}
-.timesheet-table th{background:var(--bg);padding:11px 12px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);}
-.timesheet-table th:first-child{text-align:left;width:170px;}
+.timesheet-table th{background:var(--bg);padding:10px 10px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--border);}
+.timesheet-table th:first-child{text-align:left;width:160px;}
 .timesheet-table th.th-today{color:var(--gold-dark);}
-.timesheet-table td{padding:8px 8px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle;background:var(--card);}
+.timesheet-table td{padding:7px 7px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle;background:var(--card);}
 .timesheet-table tr:hover td{background:#fff8f3;}
 .timesheet-table tr:last-child td{border-bottom:none;}
 .totals-row td{background:var(--bg)!important;font-size:12px;font-weight:700;color:var(--muted);border-top:2px solid var(--border);}
 .day-total{color:var(--ink)!important;font-size:14px!important;}
 .grand-total{color:var(--gold-dark)!important;font-size:15px!important;}
 .row-total{font-size:14px;font-weight:700;color:var(--gold-dark);}
-.client-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;flex-shrink:0;}
-.client-picklist{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:5px 8px;border-radius:7px;cursor:pointer;outline:none;max-width:145px;}
-.client-picklist:focus{border-color:var(--gold);}
-.hours-input{width:58px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:5px 7px;border-radius:7px;text-align:center;outline:none;transition:all .2s;}
+.client-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;flex-shrink:0;}
+.client-picklist{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:5px 7px;border-radius:7px;cursor:pointer;outline:none;max-width:140px;}
+.hours-input{width:54px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:5px 6px;border-radius:7px;text-align:center;outline:none;transition:all .2s;}
 .hours-input:focus{border-color:var(--gold);background:var(--card);box-shadow:0 0 0 3px rgba(232,160,32,.12);}
 .hours-input:hover{border-color:var(--border);}
-.remove-row-btn{background:none;border:none;color:var(--light);font-size:18px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:color .15s;}
+.remove-row-btn{background:none;border:none;color:var(--light);font-size:17px;cursor:pointer;padding:2px 4px;border-radius:4px;}
 .remove-row-btn:hover{color:#cc3333;}
 
-/* TO-DOS */
-.todo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background .15s;}
+/* TODOS */
+.todo-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);}
 .todo-item:last-child{border-bottom:none;}
 .todo-item:hover{background:#fff8f3;}
-.todo-check{width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
+.todo-check{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
 .todo-text{flex:1;font-size:13px;font-weight:500;}
 .todo-text.done{text-decoration:line-through;color:var(--muted);}
 .todo-due{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
 .todo-due.overdue{color:var(--red);}
-.todo-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;padding:1px 5px;border-radius:4px;}
+.todo-remove{background:none;border:none;color:var(--light);font-size:15px;cursor:pointer;padding:1px 4px;}
 .todo-remove:hover{color:#cc3333;}
-.add-todo-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-.add-todo-input{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;padding:8px 12px;border-radius:8px;outline:none;}
+.add-todo-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+.add-todo-input{flex:1;min-width:140px;background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;padding:7px 11px;border-radius:8px;outline:none;}
 .add-todo-input:focus{border-color:var(--gold);}
 
+/* LEADS */
+.lead-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);}
+.lead-item:last-child{border-bottom:none;}
+.lead-item:hover{background:#fff8f3;}
+.lead-name{flex:1;font-size:13px;font-weight:600;}
+.lead-link{font-size:11px;color:var(--blue);font-weight:600;text-decoration:none;padding:3px 8px;border-radius:5px;background:var(--blue-bg);white-space:nowrap;}
+.lead-link:hover{background:var(--blue-b);}
+.lead-who{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.lead-remove{background:none;border:none;color:var(--light);font-size:15px;cursor:pointer;padding:1px 4px;}
+.lead-remove:hover{color:#cc3333;}
+.add-lead-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+.add-lead-input{flex:1;min-width:130px;background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;padding:7px 11px;border-radius:8px;outline:none;}
+.add-lead-input:focus{border-color:var(--gold);}
+
 /* ROCKS */
-.rock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:12px;box-shadow:0 2px 6px rgba(180,120,80,.06);transition:border-color .2s;}
+.rock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:10px;box-shadow:0 2px 6px rgba(180,120,80,.06);transition:border-color .2s;}
 .rock-card:hover{border-color:var(--gold);}
-.rock-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
-.rock-num{background:var(--gold);color:var(--ink);font-weight:800;font-size:11px;min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
-.rock-title-input{flex:1;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;padding:3px 0;outline:none;transition:border-color .2s;}
+.rock-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.rock-num{background:var(--gold);color:var(--ink);font-weight:800;font-size:11px;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
+.rock-title-input{flex:1;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;padding:2px 0;outline:none;transition:border-color .2s;}
 .rock-title-input:focus{border-bottom-color:var(--gold);}
 .rock-title-input::placeholder{color:var(--light);font-weight:400;}
-.rock-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-left:36px;}
+.rock-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:32px;}
 .meta-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
-.rock-remove{background:none;border:none;color:var(--light);font-size:18px;cursor:pointer;padding:2px 5px;border-radius:4px;transition:color .15s;margin-left:auto;}
+.rock-remove{background:none;border:none;color:var(--light);font-size:17px;cursor:pointer;padding:2px 4px;transition:color .15s;margin-left:auto;}
 .rock-remove:hover{color:#cc3333;}
-.status-sel{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer;outline:none;}
+.status-sel{background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:5px 9px;border-radius:8px;cursor:pointer;outline:none;}
 .s-on-track{background:var(--green-bg);color:var(--green);border-color:var(--green-b);}
 .s-off-track{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
 .s-blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b);}
 .s-done{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-b);}
-.rock-inline-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.rock-inline-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
 .rock-inline-row:last-child{border-bottom:none;}
 .rock-inline-name{flex:1;font-size:13px;font-weight:600;}
 .rock-inline-q{font-size:11px;color:var(--muted);}
-.quarter-badge{font-size:12px;font-weight:600;padding:10px 16px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.quarter-badge{font-size:12px;font-weight:600;padding:9px 14px;border-radius:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 .quarter-badge.current{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);}
 .quarter-badge.historical{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
 .quarter-badge.planning{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b);}
 .rock-historical{opacity:.9;border-style:dashed;}
-.rock-historical:hover{border-color:var(--muted)!important;border-style:dashed;}
-.rock-title-locked{flex:1;font-size:15px;font-weight:700;color:var(--ink);}
-.rock-last-status{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.rock-title-locked{flex:1;font-size:14px;font-weight:700;}
+.rock-last-status{font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
 .rock-last-status.s-on-track{background:var(--green-bg);color:var(--green);border-color:var(--green-b);}
 .rock-last-status.s-off-track{background:var(--red-bg);color:var(--red);border-color:var(--red-b);}
 .rock-last-status.s-blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b);}
 .rock-last-status.s-done{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-b);}
-.lock-icon{font-size:14px;opacity:.5;}
+.lock-icon{font-size:13px;opacity:.5;}
 .rock-planning{border-color:var(--blue-b);}
-.rock-planning:hover{border-color:var(--blue)!important;}
 
 /* ISSUES */
-.issue-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);transition:background .15s;}
+.issue-item{padding:14px 16px;border-bottom:1px solid var(--border);}
 .issue-item:last-child{border-bottom:none;}
 .issue-item:hover{background:#fff8f3;}
-.issue-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;flex-shrink:0;margin-top:2px;}
+.issue-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.issue-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;border-radius:5px;flex-shrink:0;margin-top:2px;}
 .type-issue{background:var(--red-bg);color:var(--red);}
 .type-opportunity{background:var(--green-bg);color:var(--green);}
 .type-idea{background:var(--blue-bg);color:var(--blue);}
 .issue-body{flex:1;}
-.issue-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.issue-title{font-size:13px;font-weight:600;margin-bottom:2px;}
 .issue-title.resolved{text-decoration:line-through;color:var(--muted);}
 .issue-meta{font-size:11px;color:var(--muted);}
 .issue-actions{display:flex;gap:6px;align-items:center;}
-.resolve-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;transition:all .15s;}
+.resolve-btn{font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;}
 .open-btn{background:var(--green-bg);color:var(--green);}
-.open-btn:hover{background:var(--green-b);}
 .reopen-btn{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
-.issue-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;padding:1px 4px;border-radius:3px;}
+.issue-remove{background:none;border:none;color:var(--light);font-size:15px;cursor:pointer;padding:1px 4px;}
 .issue-remove:hover{color:#cc3333;}
+/* IDS Notes */
+.ids-notes{margin-top:8px;padding-left:12px;border-left:3px solid var(--border);}
+.ids-notes textarea{width:100%;background:transparent;border:none;color:var(--ink);font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;padding:4px 0;outline:none;resize:none;line-height:1.6;min-height:40px;}
+.ids-notes textarea:focus{border-bottom:1px solid var(--gold);}
+.ids-notes textarea::placeholder{color:var(--light);}
+.ids-toggle{font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;padding:3px 8px;border-radius:5px;background:var(--bg);border:none;font-family:'Poppins',sans-serif;}
+.ids-toggle:hover{color:var(--gold-dark);}
 
 /* SCORECARD */
 .scorecard-table{width:100%;border-collapse:collapse;}
-.scorecard-table th{background:var(--bg);padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--border);}
+.scorecard-table th{background:var(--bg);padding:9px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--border);}
 .scorecard-table th.num{text-align:center;}
-.scorecard-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
+.scorecard-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
 .scorecard-table td.num{text-align:center;}
 .scorecard-table tr:hover td{background:#fff8f3;}
 .scorecard-table tr:last-child td{border-bottom:none;}
-.metric-name-input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:2px 0;outline:none;width:100%;transition:border-color .2s;}
+.metric-name-input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:2px 0;outline:none;width:100%;}
 .metric-name-input:focus{border-bottom-color:var(--gold);}
-.metric-val-input{width:70px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:4px 7px;border-radius:6px;text-align:center;outline:none;transition:all .2s;}
+.metric-val-input{width:66px;background:var(--bg);border:1px solid transparent;color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:4px 6px;border-radius:6px;text-align:center;outline:none;}
 .metric-val-input:focus{border-color:var(--gold);background:var(--card);}
 .metric-val-input:hover{border-color:var(--border);}
-.rag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;margin-left:4px;}
+.metric-val-input.auto-filled{background:rgba(232,160,32,.08);border-color:var(--gold-light);color:var(--gold-dark);}
+.rag{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;margin-left:3px;}
 .rag-green{background:var(--green-bg);color:var(--green);}
 .rag-red{background:var(--red-bg);color:var(--red);}
-.rag-grey{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+
+/* LEADS PANEL ON SCORECARD */
+.leads-week-panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-top:16px;box-shadow:0 2px 8px rgba(180,120,80,.07);}
+.leads-week-title{font-size:12px;font-weight:800;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.leads-week-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.leads-week-item:last-child{border-bottom:none;}
+.leads-week-name{flex:1;font-size:13px;font-weight:600;}
+.leads-week-who{font-size:11px;color:var(--muted);font-weight:600;}
 
 /* VISION */
-.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:700px){.vision-grid{grid-template-columns:1fr;}}
-.vision-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.vision-item{padding:10px 0;border-bottom:1px solid var(--border);}
 .vision-item:last-child{border-bottom:none;}
-.vision-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.vision-textarea{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;padding:4px 0;outline:none;resize:none;transition:border-color .2s;line-height:1.6;}
+.vision-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.vision-textarea{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;padding:3px 0;outline:none;resize:none;transition:border-color .2s;line-height:1.6;}
 .vision-textarea:focus{border-bottom-color:var(--gold);}
 .vision-textarea::placeholder{color:var(--light);}
-.goal-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.goal-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
 .goal-item:last-child{border-bottom:none;}
 .goal-num{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.goal-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:3px 0;outline:none;transition:border-color .2s;}
+.goal-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:3px 0;outline:none;}
 .goal-input:focus{border-bottom-color:var(--gold);}
-.goal-input::placeholder{color:var(--light);font-weight:400;}
-.goal-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;}
-.goal-remove:hover{color:#cc3333;}
+.goal-remove{background:none;border:none;color:var(--light);font-size:15px;cursor:pointer;}
 
 /* MONTHLY */
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-bottom:22px;}
-.summary-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 2px 6px rgba(180,120,80,.06);transition:border-color .2s;}
-.summary-card:hover{border-color:var(--gold);}
-.summary-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
-.summary-value{font-size:26px;font-weight:800;color:var(--gold-dark);letter-spacing:-1px;line-height:1;margin-bottom:3px;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;margin-bottom:20px;}
+.summary-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:0 2px 6px rgba(180,120,80,.06);}
+.summary-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.summary-value{font-size:24px;font-weight:800;color:var(--gold-dark);letter-spacing:-1px;line-height:1;margin-bottom:3px;}
 .summary-sub{font-size:11px;color:var(--muted);}
 .invoice-table{width:100%;border-collapse:collapse;}
-.invoice-table th{background:var(--bg);padding:11px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);}
+.invoice-table th{background:var(--bg);padding:10px 13px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--border);}
 .invoice-table th:last-child,.invoice-table td:last-child{text-align:right;}
-.invoice-table td{padding:13px 14px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
+.invoice-table td{padding:12px 13px;border-bottom:1px solid var(--border);font-size:13px;background:var(--card);}
 .invoice-table tr:hover td{background:#fff8f3;}
-.invoice-table tr:last-child td{border-bottom:none;}
-.member-tag{display:inline-block;background:var(--bg);color:var(--ink);font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:2px;}
+.member-tag{display:inline-block;background:var(--bg);color:var(--ink);font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px;margin:2px;}
 
 /* SETTINGS */
-.settings-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg);border-radius:9px;border:1px solid var(--border);}
+.settings-item{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg);border-radius:9px;border:1px solid var(--border);}
 .settings-item-name{font-size:13px;font-weight:600;flex:1;}
-.settings-remove{background:none;border:none;color:var(--light);font-size:17px;cursor:pointer;padding:2px 5px;border-radius:3px;}
+.settings-remove{background:none;border:none;color:var(--light);font-size:16px;cursor:pointer;padding:2px 4px;}
 .settings-remove:hover{color:#cc3333;}
-.settings-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.settings-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
 .add-row-ctrl{display:flex;gap:8px;}
 
-.toast{position:fixed;bottom:28px;right:28px;background:var(--gold);color:var(--ink);padding:13px 22px;border-radius:12px;font-weight:700;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;}
+/* L10 MEETING TAB */
+.l10-section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;}
+.l10-section-header{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .15s;}
+.l10-section-header:hover{background:#fff8f3;}
+.l10-section-num{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.l10-section-title{font-size:14px;font-weight:700;flex:1;}
+.l10-section-time{font-size:12px;color:var(--muted);font-weight:600;}
+.l10-section-body{padding:14px 18px;border-top:1px solid var(--border);display:none;}
+.l10-section-body.open{display:block;}
+.l10-notes{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;padding:10px 12px;border-radius:8px;outline:none;resize:vertical;min-height:60px;line-height:1.6;}
+.l10-notes:focus{border-color:var(--gold);}
+
+/* MEETING SCORES */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px;}
+.score-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;}
+.score-name{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.score-input{width:70px;background:var(--card);border:2px solid var(--border);color:var(--ink);font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;padding:6px;border-radius:8px;text-align:center;outline:none;}
+.score-input:focus{border-color:var(--gold);}
+.meeting-avg{font-size:28px;font-weight:800;color:var(--gold-dark);text-align:center;margin-top:12px;}
+.meeting-avg-label{font-size:11px;color:var(--muted);text-align:center;font-weight:600;}
+
+/* MEETING HISTORY */
+.meeting-history-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.meeting-history-item:last-child{border-bottom:none;}
+.meeting-history-date{font-size:13px;font-weight:700;min-width:90px;}
+.meeting-history-notes{flex:1;font-size:12px;color:var(--muted);}
+.meeting-history-scores{display:flex;gap:6px;flex-wrap:wrap;}
+.score-badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--bg);border:1px solid var(--border);}
+.meeting-history-avg{font-size:14px;font-weight:800;color:var(--gold-dark);min-width:40px;text-align:right;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--gold);color:var(--ink);padding:12px 20px;border-radius:12px;font-weight:700;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;}
 .toast.show{transform:translateY(0);opacity:1;}
-@media(max-width:700px){.main{padding:14px;}.header,.nav{padding:0 14px;}.hours-input{width:46px;font-size:12px;}.timesheet-table th,.timesheet-table td{padding:6px 4px;}}
+@media(max-width:700px){.main{padding:12px;}.header,.nav{padding:0 12px;}.hours-input{width:44px;font-size:12px;}.timesheet-table th,.timesheet-table td{padding:5px 3px;}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="login-screen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">SolveSimple.</div>
     <div class="login-subtitle">Team Operating System</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6">Sign in with your SolveSimple Microsoft account to access the team dashboard.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6">Sign in with your SolveSimple Microsoft account.</p>
     <button class="login-btn" onclick="signIn()">
-      <svg viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-      </svg>
+      <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
       Sign in with Microsoft
     </button>
-    <p style="font-size:11px;color:var(--light);margin-top:20px">Use your @solvesimple.au account</p>
-    <p id="login-error" style="display:none;font-size:12px;color:var(--red);margin-top:16px;background:var(--red-bg);padding:10px;border-radius:8px">Could not load sign-in library. Please disable tracking prevention for this site or try a different browser.</p>
+    <p style="font-size:11px;color:var(--light);margin-top:18px">Use your @solvesimple.au account</p>
+    <p id="login-error" style="display:none;font-size:12px;color:var(--red);margin-top:14px;background:var(--red-bg);padding:10px;border-radius:8px">Could not load sign-in library. Try disabling tracking prevention for this site.</p>
   </div>
 </div>
 
-<!-- APP (hidden until logged in) -->
+<!-- APP -->
 <div id="app" style="display:none">
-
 <div class="sync-bar">
   <span class="sync-dot" id="sync-dot"></span>
-  <span id="sync-label">All changes saved to OneDrive</span>
+  <span id="sync-label">Loading...</span>
   <span style="margin-left:auto;font-size:11px;color:var(--light)" id="last-sync"></span>
 </div>
-
 <header class="header">
   <div class="logo">SolveSimple.</div>
   <div class="header-right">
-    <div class="user-chip">
-      <div class="user-avatar" id="user-avatar">?</div>
-      <span id="user-name">Loading...</span>
+    <div class="user-chip"><div class="user-avatar" id="user-avatar">?</div><span id="user-name">...</span></div>
+    <div id="admin-controls" style="display:none;align-items:center;gap:8px">
+      <span style="font-size:11px;color:var(--muted);font-weight:600">View as:</span>
+      <select class="user-selector" id="viewAsSelect" onchange="switchViewAs()"></select>
     </div>
     <button class="signout-btn" onclick="signOut()">Sign out</button>
   </div>
 </header>
-
 <nav class="nav">
-  <div class="nav-tab active"  onclick="showPage('myweek',this)">My Week</div>
-  <div class="nav-tab"         onclick="showPage('issues',this)">Issues</div>
-  <div class="nav-tab"         onclick="showPage('scorecard',this)">Scorecard</div>
-  <div class="nav-tab"         onclick="showPage('rocks',this)">🪨 Rocks</div>
-  <div class="nav-tab"         onclick="showPage('vision',this)">Vision</div>
-  <div class="nav-tab"         onclick="showPage('monthly',this)">Monthly Report</div>
-  <div class="nav-tab"         onclick="showPage('settings',this)">Settings</div>
+  <div class="nav-tab active" onclick="showPage('myweek',this)">My Week</div>
+  <div class="nav-tab" onclick="showPage('issues',this)">Issues</div>
+  <div class="nav-tab" onclick="showPage('scorecard',this)">Scorecard</div>
+  <div class="nav-tab" onclick="showPage('rocks',this)">🪨 Rocks</div>
+  <div class="nav-tab" onclick="showPage('l10',this)">L10 Meeting</div>
+  <div class="nav-tab" onclick="showPage('vision',this)">Vision</div>
+  <div class="nav-tab" onclick="showPage('monthly',this)">Monthly Report</div>
+  <div class="nav-tab" onclick="showPage('settings',this)">Settings</div>
 </nav>
-
 <main class="main">
 
 <!-- MY WEEK -->
 <div id="page-myweek" class="page active">
   <div class="page-title">My Week</div>
-  <div class="page-subtitle" id="myweek-subtitle">Time, to-dos &amp; rocks</div>
+  <div class="page-subtitle" id="myweek-subtitle">Time, to-dos, leads &amp; rocks</div>
   <div class="row-nav">
     <button class="week-btn" onclick="changeWeek(-1)">←</button>
     <span class="week-label" id="week-label"></span>
@@ -328,7 +372,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="card">
     <div class="card-title">☑ To-Dos</div>
     <div id="my-todos-list"></div>
-    <div class="add-todo-row" style="margin-top:14px">
+    <div class="add-todo-row">
       <input class="add-todo-input" id="new-todo-text" placeholder="Add a to-do..." onkeydown="if(event.key==='Enter')addTodo()">
       <select class="ss-select" id="new-todo-due" style="font-weight:500;font-size:12px">
         <option value="">No due date</option>
@@ -341,10 +385,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
   </div>
   <div id="my-rocks-section"></div>
   <div class="card">
-    <div class="card-title">⏱ Hours Logged</div>
-    <div style="overflow-x:auto">
-      <table class="timesheet-table" id="timesheet-table"></table>
+    <div class="card-title">🎯 New Leads This Week</div>
+    <div id="my-leads-list"></div>
+    <div class="add-lead-row">
+      <input class="add-lead-input" id="new-lead-name" placeholder="Lead name / company..." onkeydown="if(event.key==='Enter')addLead()">
+      <input class="add-lead-input" id="new-lead-url" placeholder="Salesforce URL (optional)" style="flex:1.5">
+      <button class="btn btn-primary btn-sm" onclick="addLead()">Add</button>
     </div>
+  </div>
+  <div class="card">
+    <div class="card-title">⏱ Hours Logged</div>
+    <div style="overflow-x:auto"><table class="timesheet-table" id="timesheet-table"></table></div>
     <div class="actions">
       <button class="btn btn-secondary btn-sm" onclick="addRow()">+ Add Row</button>
       <button class="btn btn-secondary btn-sm" onclick="clearWeek()">Clear</button>
@@ -356,25 +407,19 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
 <!-- ISSUES -->
 <div id="page-issues" class="page">
   <div class="page-title">Issues List</div>
-  <div class="page-subtitle">Capture issues, opportunities &amp; ideas — resolve in your Level 10</div>
+  <div class="page-subtitle">Capture issues, opportunities &amp; ideas — work through IDS in your L10</div>
   <div class="card">
     <div class="card-title">Add to List</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-      <input class="ss-input" id="new-issue-text" placeholder="Describe the issue..." style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter')addIssue()">
-      <select class="ss-select" id="new-issue-type">
-        <option value="issue">🔴 Issue</option>
-        <option value="opportunity">🟢 Opportunity</option>
-        <option value="idea">🔵 Idea</option>
-      </select>
+      <input class="ss-input" id="new-issue-text" placeholder="Describe the issue..." style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')addIssue()">
+      <select class="ss-select" id="new-issue-type"><option value="issue">🔴 Issue</option><option value="opportunity">🟢 Opportunity</option><option value="idea">🔵 Idea</option></select>
       <select class="ss-select" id="new-issue-owner"><option value="-1">— Owner —</option></select>
       <button class="btn btn-primary btn-sm" onclick="addIssue()">Add</button>
     </div>
   </div>
   <div class="filter-bar">
     <span class="filter-label">Show:</span>
-    <select class="ss-select" id="issues-filter" onchange="renderIssues()">
-      <option value="open">Open</option><option value="all">All</option><option value="resolved">Resolved</option>
-    </select>
+    <select class="ss-select" id="issues-filter" onchange="renderIssues()"><option value="open">Open</option><option value="all">All</option><option value="resolved">Resolved</option></select>
     <select class="ss-select" id="issues-owner-filter" onchange="renderIssues()"><option value="all">All owners</option></select>
   </div>
   <div class="card" style="padding:0;overflow:hidden"><div id="issues-list"></div></div>
@@ -383,7 +428,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
 <!-- SCORECARD -->
 <div id="page-scorecard" class="page">
   <div class="page-title">Scorecard</div>
-  <div class="page-subtitle">Weekly measurables — green means on target, red means off</div>
+  <div class="page-subtitle">Weekly measurables — billable days &amp; leads auto-fill from your activity</div>
   <div class="row-nav">
     <button class="week-btn" onclick="changeScorecardWeek(-1)">←</button>
     <span class="week-label" id="scorecard-week-label"></span>
@@ -396,6 +441,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
     <button class="btn btn-secondary btn-sm" onclick="addMetric()">+ Add Metric</button>
     <button class="btn btn-primary btn-sm" onclick="syncToOneDrive()">Save</button>
   </div>
+  <div class="leads-week-panel" id="last-weeks-leads-panel"></div>
 </div>
 
 <!-- ROCKS -->
@@ -409,10 +455,79 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
     <button class="btn btn-secondary btn-sm" id="setup-mode-btn" onclick="toggleSetupMode()">🔧 Setup Mode</button>
   </div>
   <div id="setup-mode-banner" style="display:none" class="quarter-badge planning">
-    🔧 <strong>Setup Mode ON</strong> — you can add and edit rocks in historical quarters.
-    <button onclick="toggleSetupMode()" style="margin-left:auto;background:none;border:1px solid var(--blue-b);color:var(--blue);font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;cursor:pointer">Turn Off</button>
+    🔧 <strong>Setup Mode ON</strong> — historical quarters are editable.
+    <button onclick="toggleSetupMode()" style="margin-left:auto;background:none;border:1px solid var(--blue-b);color:var(--blue);font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;cursor:pointer">Turn Off</button>
   </div>
   <div id="rocks-list"></div>
+</div>
+
+<!-- L10 MEETING -->
+<div id="page-l10" class="page">
+  <div class="page-title">⚡ Level 10 Meeting</div>
+  <div class="page-subtitle">Weekly rhythm — 90 minutes, same time every week</div>
+
+  <div class="row-nav">
+    <button class="week-btn" onclick="changeL10Week(-1)">←</button>
+    <span class="week-label" id="l10-week-label"></span>
+    <button class="week-btn" onclick="changeL10Week(1)">→</button>
+    <button class="btn btn-primary btn-sm" onclick="saveL10()" style="margin-left:auto">Save Meeting</button>
+  </div>
+
+  <!-- Agenda sections -->
+  <div class="l10-section" onclick="toggleL10Section('segue')">
+    <div class="l10-section-header"><div class="l10-section-num">1</div><div class="l10-section-title">Segue</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-segue">›</span></div>
+    <div class="l10-section-body" id="l10-body-segue"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Share one personal and one professional best from the past week.</p><textarea class="l10-notes" id="l10-notes-segue" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('scorecard')">
+    <div class="l10-section-header"><div class="l10-section-num">2</div><div class="l10-section-title">Scorecard Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-scorecard">›</span></div>
+    <div class="l10-section-body" id="l10-body-scorecard"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Review each measurable. Drop any off-track items to the Issues List.</p><textarea class="l10-notes" id="l10-notes-scorecard" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('rocks')">
+    <div class="l10-section-header"><div class="l10-section-num">3</div><div class="l10-section-title">Rock Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-rocks">›</span></div>
+    <div class="l10-section-body" id="l10-body-rocks" onclick="event.stopPropagation()"><p style="font-size:12px;color:var(--muted);margin-bottom:10px">On track or off track? Drop any off-track items to the Issues List.</p><div id="l10-rocks-summary"></div><textarea class="l10-notes" id="l10-notes-rocks" placeholder="Notes..." oninput="saveL10Draft()" style="margin-top:10px"></textarea></div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('headlines')">
+    <div class="l10-section-header"><div class="l10-section-num">4</div><div class="l10-section-title">Headlines</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-headlines">›</span></div>
+    <div class="l10-section-body" id="l10-body-headlines"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Customer and employee headlines — good news and bad news.</p><textarea class="l10-notes" id="l10-notes-headlines" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('todos')">
+    <div class="l10-section-header"><div class="l10-section-num">5</div><div class="l10-section-title">To-Do List Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-todos">›</span></div>
+    <div class="l10-section-body" id="l10-body-todos" onclick="event.stopPropagation()">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Review last week's to-dos. Add new ones for this week.</p>
+      <div id="l10-todos-list"></div>
+      <div class="add-todo-row" style="margin-top:10px">
+        <input class="add-todo-input" id="l10-new-todo-text" placeholder="Add meeting to-do..." onkeydown="if(event.key==='Enter')addL10Todo()">
+        <select class="ss-select" id="l10-new-todo-owner" style="font-size:12px"></select>
+        <button class="btn btn-primary btn-sm" onclick="addL10Todo()">Add</button>
+      </div>
+    </div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('ids')">
+    <div class="l10-section-header"><div class="l10-section-num">6</div><div class="l10-section-title">IDS — Issues</div><div class="l10-section-time">60 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-ids">›</span></div>
+    <div class="l10-section-body" id="l10-body-ids" onclick="event.stopPropagation()">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Identify → Discuss → Solve. Work through your issues list.</p>
+      <div id="l10-issues-summary"></div>
+    </div>
+  </div>
+  <div class="l10-section" onclick="toggleL10Section('conclude')">
+    <div class="l10-section-header"><div class="l10-section-num">7</div><div class="l10-section-title">Conclude</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-conclude">›</span></div>
+    <div class="l10-section-body" id="l10-body-conclude" onclick="event.stopPropagation()">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Recap to-dos. Cascading messages. Rate the meeting.</p>
+      <textarea class="l10-notes" id="l10-notes-conclude" placeholder="Cascading messages..." oninput="saveL10Draft()"></textarea>
+      <div style="margin-top:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Rate the Meeting (out of 10)</div>
+        <div class="score-grid" id="meeting-score-grid"></div>
+        <div class="meeting-avg" id="meeting-avg-display">—</div>
+        <div class="meeting-avg-label">Team Average</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meeting History -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">📊 Meeting History</div>
+    <div id="meeting-history-list"></div>
+  </div>
 </div>
 
 <!-- VISION -->
@@ -435,7 +550,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="card">
     <div class="card-title">⭐ 1-Year Goals <span id="year-goal-label" style="font-weight:500;font-size:11px;margin-left:6px;color:var(--muted)"></span></div>
     <div id="one-year-goals-list"></div>
-    <div style="margin-top:12px"><button class="btn btn-secondary btn-sm" onclick="addYearGoal()">+ Add Goal</button></div>
+    <div style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="addYearGoal()">+ Add Goal</button></div>
   </div>
 </div>
 
@@ -463,24 +578,17 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
   <div class="card">
     <div class="card-title">Clients</div>
     <div class="settings-list" id="client-list"></div>
-    <div class="add-row-ctrl">
-      <input class="ss-input" id="new-client" placeholder="Client name..." onkeydown="if(event.key==='Enter')addClient()">
-      <button class="btn btn-primary btn-sm" onclick="addClient()">Add</button>
-    </div>
+    <div class="add-row-ctrl"><input class="ss-input" id="new-client" placeholder="Client name..." onkeydown="if(event.key==='Enter')addClient()"><button class="btn btn-primary btn-sm" onclick="addClient()">Add</button></div>
   </div>
   <div class="card">
     <div class="card-title">Team Members</div>
     <div class="settings-list" id="member-list"></div>
-    <div class="add-row-ctrl">
-      <input class="ss-input" id="new-member" placeholder="Team member name..." onkeydown="if(event.key==='Enter')addMember()">
-      <button class="btn btn-primary btn-sm" onclick="addMember()">Add</button>
-    </div>
+    <div class="add-row-ctrl"><input class="ss-input" id="new-member" placeholder="Team member name..." onkeydown="if(event.key==='Enter')addMember()"><button class="btn btn-primary btn-sm" onclick="addMember()">Add</button></div>
   </div>
 </div>
 
 </main>
 </div><!-- end #app -->
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -493,77 +601,46 @@ const MSAL_CONFIG = {
   },
   cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: true }
 };
-const SCOPES = ['Files.ReadWrite', 'User.Read', 'Sites.ReadWrite.All'];
-const FILE_NAME = 'team-os-data.json';
-const FOLDER_NAME = 'SolveSimple Team OS';
-let oneDriveFileUrl = null; // resolved at runtime
+const SCOPES = ['Files.ReadWrite', 'User.Read'];
+const SHARED_DRIVE_ID = 'b!1P06FcIj6ke9aPV0U1R39Ep-8xt-nkNJm5-h0FXRjcdaseFY2dubQYfe39M3_wKG';
+const SHARED_FILE_PATH = `/drives/${SHARED_DRIVE_ID}/root:/SolveSimple Team OS/team-os-data.json:/content`;
+const ADMIN_EMAIL = 'dan@solvesimple.au';
 
-// Find the correct drive and file path dynamically
-async function resolveFileUrl(token) {
-  if (oneDriveFileUrl) return oneDriveFileUrl;
-  // Try personal OneDrive first
-  const personalUrl = `/me/drive/root:/${FOLDER_NAME}/${FILE_NAME}:/content`;
-  const testRes = await fetch(`https://graph.microsoft.com/v1.0/me/drive/root:/${FOLDER_NAME}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (testRes.ok) {
-    oneDriveFileUrl = personalUrl;
-    return oneDriveFileUrl;
-  }
-  // Fall back to finding it across all drives
-  const drivesRes = await fetch('https://graph.microsoft.com/v1.0/me/drives', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (drivesRes.ok) {
-    const drives = await drivesRes.json();
-    for (const drive of drives.value) {
-      const folderRes = await fetch(`https://graph.microsoft.com/v1.0/drives/${drive.id}/root:/${FOLDER_NAME}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (folderRes.ok) {
-        oneDriveFileUrl = `/drives/${drive.id}/root:/${FOLDER_NAME}/${FILE_NAME}:/content`;
-        return oneDriveFileUrl;
-      }
-    }
-  }
-  // Default fallback to personal OneDrive — will create folder if needed
-  oneDriveFileUrl = personalUrl;
-  return oneDriveFileUrl;
-}
-
-// msalInstance is created in initApp() once the MSAL library has loaded
-// msalApp initialized in initApp() after MSAL library loads
-let currentUser = null;
-let accessToken = null;
 let syncTimeout = null;
 
 // ===================== AUTH =====================
 async function signIn() {
-  try {
-    // Use redirect instead of popup — works on all browsers and mobile
-    await window.msalApp.loginRedirect({ scopes: SCOPES });
-  } catch (e) {
-    console.error('Login failed:', e);
-    showToast('Sign in failed — please try again');
-  }
+  try { await window.msalApp.loginRedirect({ scopes: SCOPES }); }
+  catch(e) { console.error('Login failed:', e); showToast('Sign in failed — please try again'); }
 }
 
 async function handleAuth(account, token) {
-  currentUser = account;
-  accessToken = token;
-  const name = currentUser.name || currentUser.username;
+  const name = account.name || account.username;
+  const email = account.username || '';
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = name.split(' ')[0];
   document.getElementById('user-avatar').textContent = initials;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
-  // Match logged-in user to team member by first name
+  // Always reset to current week on login
+  state.currentWeekOffset = 0;
+  state.scorecardWeekOffset = 0;
+  state.l10WeekOffset = 0;
+
+  await loadFromOneDrive();
+
+  // Match user to team member
   const firstName = name.split(' ')[0].toLowerCase();
   const idx = state.members.findIndex(m => m.toLowerCase().includes(firstName));
   if (idx >= 0) state.currentUser = idx;
 
-  await loadFromOneDrive();
+  // Admin view-as dropdown
+  if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    const ac = document.getElementById('admin-controls');
+    if (ac) { ac.style.display = 'flex'; setupViewAsSelector(); }
+  }
+
   renderMyWeek();
 }
 
@@ -571,101 +648,77 @@ async function getToken() {
   try {
     const accounts = window.msalApp.getAllAccounts();
     if (!accounts.length) return null;
-    const result = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-    return result.accessToken;
-  } catch (e) {
-    // Silent token refresh failed — redirect to login
-    await window.msalApp.acquireTokenRedirect({ scopes: SCOPES });
-    return null;
-  }
+    const r = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+    return r.accessToken;
+  } catch(e) { await window.msalApp.acquireTokenRedirect({ scopes: SCOPES }); return null; }
 }
 
-function signOut() {
-  window.msalApp.logoutRedirect({ postLogoutRedirectUri: 'https://solvesimple.github.io/team-os/' });
-}
+function signOut() { window.msalApp.logoutRedirect({ postLogoutRedirectUri: 'https://solvesimple.github.io/team-os/' }); }
 
-// Handle redirect on load — this runs on every page load and catches the auth response
 async function initAuth() {
   try {
     const result = await window.msalApp.handleRedirectPromise();
-    if (result) {
-      // Returning from Microsoft login redirect
-      await handleAuth(result.account, result.accessToken);
-      return;
-    }
-    // Check for existing session
+    if (result) { await handleAuth(result.account, result.accessToken); return; }
     const accounts = window.msalApp.getAllAccounts();
     if (accounts.length) {
-      const tokenResult = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-      await handleAuth(accounts[0], tokenResult.accessToken);
+      const tr = await window.msalApp.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+      await handleAuth(accounts[0], tr.accessToken);
     }
-  } catch(e) {
-    console.log('Auth init error:', e);
-  }
+  } catch(e) { console.log('Auth init:', e); }
+}
+
+function setupViewAsSelector() {
+  const sel = document.getElementById('viewAsSelect');
+  if (!sel) return;
+  sel.innerHTML = state.members.map((m,i) => `<option value="${i}" ${i===state.currentUser?'selected':''}>${m}</option>`).join('');
+}
+function switchViewAs() {
+  state.currentUser = parseInt(document.getElementById('viewAsSelect').value);
+  renderMyWeek();
 }
 
 // ===================== ONEDRIVE SYNC =====================
 function setSyncStatus(status, msg) {
-  const dot = document.getElementById('sync-dot');
-  const label = document.getElementById('sync-label');
-  if (!dot || !label) return;
-  dot.className = 'sync-dot' + (status === 'syncing' ? ' syncing' : status === 'error' ? ' error' : '');
+  const dot = document.getElementById('sync-dot'), label = document.getElementById('sync-label');
+  if (!dot||!label) return;
+  dot.className = 'sync-dot'+(status==='syncing'?' syncing':status==='error'?' error':'');
   label.textContent = msg;
-  if (status === 'saved') {
-    document.getElementById('last-sync').textContent = 'Last saved ' + new Date().toLocaleTimeString('en-AU', {hour:'2-digit',minute:'2-digit'});
-  }
+  if (status==='saved') document.getElementById('last-sync').textContent = 'Saved '+new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
 }
 
 async function loadFromOneDrive() {
   try {
-    setSyncStatus('syncing', 'Loading from OneDrive...');
+    setSyncStatus('syncing','Loading from OneDrive...');
     const token = await getToken();
-    const fileUrl = await resolveFileUrl(token);
-    const res = await fetch(`https://graph.microsoft.com/v1.0${fileUrl}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const res = await fetch(`https://graph.microsoft.com/v1.0${SHARED_FILE_PATH}`, { headers:{Authorization:`Bearer ${token}`} });
     if (res.ok) {
       const data = await res.json();
-      Object.keys(data).forEach(k => { if (k in state) state[k] = data[k]; });
+      Object.keys(data).forEach(k => { if(k in state) state[k]=data[k]; });
       applyMigrations();
-      setSyncStatus('saved', 'All changes saved to OneDrive');
-    } else if (res.status === 404) {
-      setSyncStatus('syncing', 'First run — creating OneDrive file...');
+      setSyncStatus('saved','All changes saved to OneDrive');
+    } else if (res.status===404) {
+      setSyncStatus('syncing','First run — saving...');
       await syncToOneDrive();
     }
-  } catch(e) {
-    console.error('Load error:', e);
-    setSyncStatus('error', 'Could not connect to OneDrive — working offline');
-  }
+  } catch(e) { setSyncStatus('error','Could not connect to OneDrive — working offline'); }
 }
 
 async function syncToOneDrive() {
   try {
-    setSyncStatus('syncing', 'Saving to OneDrive...');
+    setSyncStatus('syncing','Saving...');
     const token = await getToken();
-    const fileUrl = await resolveFileUrl(token);
-    const res = await fetch(`https://graph.microsoft.com/v1.0${fileUrl}`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
+    const res = await fetch(`https://graph.microsoft.com/v1.0${SHARED_FILE_PATH}`, {
+      method:'PUT', headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify(state)
     });
-    if (res.ok) {
-      setSyncStatus('saved', 'All changes saved to OneDrive');
-    } else {
-      throw new Error('Save failed: ' + res.status);
-    }
-  } catch(e) {
-    console.error('Sync error:', e);
-    setSyncStatus('error', 'Save failed — check your connection');
-  }
+    if (res.ok) setSyncStatus('saved','All changes saved to OneDrive');
+    else throw new Error(res.status);
+  } catch(e) { setSyncStatus('error','Save failed'); }
 }
 
-// Debounced auto-save — waits 1.5s after last change before syncing
 function save() {
-  // Also save to localStorage as offline backup
   localStorage.setItem('ss_eos_backup', JSON.stringify(state));
   if (syncTimeout) clearTimeout(syncTimeout);
-  setSyncStatus('syncing', 'Saving...');
+  setSyncStatus('syncing','Saving...');
   syncTimeout = setTimeout(syncToOneDrive, 1500);
 }
 
@@ -674,13 +727,13 @@ const CLIENT_COLOURS=['#E8A020','#4ECDC4','#A78BFA','#F87171','#34D399','#60A5FA
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS=['Mon','Tue','Wed','Thu','Fri'];
 
-// Try to restore from local backup first (shows something while OneDrive loads)
-let state = JSON.parse(localStorage.getItem('ss_eos_backup') || 'null') || {
+let state = JSON.parse(localStorage.getItem('ss_eos_backup')||'null') || {
   clients:['Brickworks','Manildra','RWTS','Balanced Effect','Master Builders NSW'],
-  members:['Dan Godden','Theresa Jackson','Team Member 3'],
+  members:['Dan Godden','Theresa Jackson','Nicole Davis','Cass Backhouse'],
   timesheet:{},rows:[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}],
-  rocks:[],todos:[],issues:[],scorecard:[],
-  scorecardWeekOffset:0,vision:{},yearGoals:[],
+  rocks:[],todos:[],issues:[],scorecard:[],leads:[],
+  scorecardWeekOffset:0,vision:{},yearGoals:[],meetings:[],
+  l10WeekOffset:0,l10Notes:{},l10Todos:[],
   currentUser:0,currentWeekOffset:0,currentMonthOffset:0,
 };
 
@@ -690,19 +743,24 @@ function applyMigrations() {
   if(!state.todos)              state.todos=[];
   if(!state.issues)             state.issues=[];
   if(!state.scorecard)          state.scorecard=[];
-  if(state.scorecardWeekOffset===undefined) state.scorecardWeekOffset=0;
+  if(!state.leads)              state.leads=[];
   if(!state.vision)             state.vision={};
   if(!state.yearGoals)          state.yearGoals=[];
+  if(!state.meetings)           state.meetings=[];
+  if(!state.l10Notes)           state.l10Notes={};
+  if(!state.l10Todos)           state.l10Todos=[];
+  if(state.scorecardWeekOffset===undefined) state.scorecardWeekOffset=0;
+  if(state.l10WeekOffset===undefined) state.l10WeekOffset=0;
 }
 applyMigrations();
 
 // ===================== NAV =====================
-function showPage(page,el){
+function showPage(page,el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   el.classList.add('active');
-  ({monthly:renderMonthly,settings:renderSettings,rocks:renderRocks,issues:renderIssues,scorecard:renderScorecard,vision:renderVision})[page]?.();
+  ({monthly:renderMonthly,settings:renderSettings,rocks:renderRocks,issues:renderIssues,scorecard:renderScorecard,vision:renderVision,l10:renderL10})[page]?.();
 }
 
 // ===================== DATE HELPERS =====================
@@ -715,11 +773,10 @@ function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMo
 // ===================== MY WEEK =====================
 function changeWeek(dir){state.currentWeekOffset+=dir;save();renderMyWeek();}
 function renderMyWeek(){
-  const dates=getWeekDates(state.currentWeekOffset);
-  const mon=dates[0],fri=dates[4];
+  const dates=getWeekDates(state.currentWeekOffset),mon=dates[0],fri=dates[4];
   document.getElementById('week-label').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${fri.getDate()} ${MONTHS[fri.getMonth()].slice(0,3)} ${fri.getFullYear()}`;
   document.getElementById('myweek-subtitle').textContent=`${state.members[state.currentUser]||'You'} — week at a glance`;
-  renderTodos();renderMyRocks();renderTimesheetTable();
+  renderTodos();renderMyRocks();renderMyLeads();renderTimesheetTable();
 }
 
 // ===================== TO-DOS =====================
@@ -737,17 +794,94 @@ function renderTodos(){
   const my=state.todos.filter(t=>t.ownerIdx===state.currentUser)
     .sort((a,b)=>a.done!==b.done?(a.done?1:-1):(DUE_ORDER[a.due]??3)-(DUE_ORDER[b.due]??3));
   const el=document.getElementById('my-todos-list');
-  if(!my.length){el.innerHTML=`<div style="padding:8px 0;color:var(--muted);font-size:13px">No to-dos yet — add one below.</div>`;return;}
+  if(!my.length){el.innerHTML=`<div style="padding:6px 0;color:var(--muted);font-size:13px">No to-dos yet.</div>`;return;}
   el.innerHTML=my.map(t=>`<div class="todo-item">
     <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleTodo(${t.id})">
     <span class="todo-text ${t.done?'done':''}">${t.text}</span>
-    ${t.due?`<span class="todo-due ${t.due==='today'&&!t.done?'overdue':''}">${DUE_LABEL[t.due]||''}</span>`:''}
+    ${t.due?`<span class="todo-due ${t.due==='today'&&!t.done?'overdue':''}">${DUE_LABEL[t.due]}</span>`:''}
     <button class="todo-remove" onclick="removeTodo(${t.id})">×</button>
   </div>`).join('');
 }
 
+// ===================== LEADS =====================
+function addLead(){
+  const name=document.getElementById('new-lead-name').value.trim();if(!name)return;
+  const url=document.getElementById('new-lead-url').value.trim();
+  const wk=weekKey(state.currentWeekOffset);
+  state.leads.push({id:Date.now(),name,url,ownerIdx:state.currentUser,weekKey:wk,createdAt:new Date().toISOString()});
+  document.getElementById('new-lead-name').value='';
+  document.getElementById('new-lead-url').value='';
+  save();renderMyLeads();renderScorecard();
+}
+function removeLead(id){state.leads=state.leads.filter(l=>l.id!==id);save();renderMyLeads();renderScorecard();}
+
+function renderMyLeads(){
+  const wk=weekKey(state.currentWeekOffset);
+  const my=state.leads.filter(l=>l.ownerIdx===state.currentUser&&l.weekKey===wk);
+  const el=document.getElementById('my-leads-list');
+  if(!my.length){el.innerHTML=`<div style="padding:6px 0;color:var(--muted);font-size:13px">No leads logged this week.</div>`;return;}
+  el.innerHTML=my.map(l=>`<div class="lead-item">
+    <span class="lead-name">${l.name}</span>
+    ${l.url?`<a class="lead-link" href="${l.url}" target="_blank" rel="noopener">Open in Salesforce →</a>`:''}
+    <button class="lead-remove" onclick="removeLead(${l.id})">×</button>
+  </div>`).join('');
+}
+
+// Get lead count for a week (for scorecard auto-fill)
+function getLeadCountForWeek(wk){return state.leads.filter(l=>l.weekKey===wk).length;}
+
+// Last week's leads for scorecard panel (refreshes Monday 7am AEST = 9pm UTC Sunday)
+function getLastWeekLeadsContext(){
+  // Calculate "last week" relative to current AEST time
+  const now=new Date();
+  // AEST = UTC+10, AEDT = UTC+11. Use UTC+10 as base
+  const aestOffset=10*60*60*1000;
+  const aestNow=new Date(now.getTime()+aestOffset);
+  const dayOfWeek=aestNow.getUTCDay(); // 0=Sun,1=Mon...
+  const hour=aestNow.getUTCHours();
+  // If it's Monday before 7am AEST, still show last-last week
+  let weeksBack=1;
+  if(dayOfWeek===1&&hour<7) weeksBack=2;
+  // Get the Monday of "last week"
+  const lastMonday=getMondayOfWeek(-weeksBack);
+  const lastWk=dateKey(lastMonday);
+  return {lastWk,weeksBack};
+}
+
+function renderLastWeeksLeads(){
+  const panel=document.getElementById('last-weeks-leads-panel');if(!panel)return;
+  const{lastWk}=getLastWeekLeadsContext();
+  const lastWeekLeads=state.leads.filter(l=>l.weekKey===lastWk);
+
+  const lastMon=new Date(lastWk+'T00:00:00');
+  const lastFri=new Date(lastMon);lastFri.setDate(lastMon.getDate()+4);
+  const label=`${lastMon.getDate()} ${MONTHS[lastMon.getMonth()].slice(0,3)} – ${lastFri.getDate()} ${MONTHS[lastFri.getMonth()].slice(0,3)}`;
+
+  if(!lastWeekLeads.length){
+    panel.innerHTML=`<div class="leads-week-title">🎯 Last Week's Leads (${label})</div><div style="color:var(--muted);font-size:13px">No leads logged last week.</div>`;
+    return;
+  }
+  panel.innerHTML=`<div class="leads-week-title">🎯 Last Week's Leads (${label}) — ${lastWeekLeads.length} total</div>`+
+    lastWeekLeads.map(l=>`<div class="leads-week-item">
+      <span class="leads-week-name">${l.name}</span>
+      <span class="leads-week-who">${state.members[l.ownerIdx]||'Unknown'}</span>
+      ${l.url?`<a class="lead-link" href="${l.url}" target="_blank" rel="noopener">Salesforce →</a>`:''}
+    </div>`).join('');
+}
+
 // ===================== TIMESHEET =====================
 function getTimesheetKey(ui,wo){return `${ui}_${weekKey(wo)}`;}
+function toDays(h){if(h<=0)return 0;return Math.ceil((h/8)*2)/2;}
+
+// Auto-calculate billable days for a member for a given week
+function calcBillableDays(memberIdx,wk){
+  const tk=`${memberIdx}_${wk}`;
+  const data=state.timesheet[tk]||{};
+  let total=0;
+  state.rows.forEach((_,ri)=>{for(let di=0;di<5;di++)total+=parseFloat(data[`${ri}_${di}`]||0);});
+  return toDays(total);
+}
+
 function renderTimesheetTable(){
   const dates=getWeekDates(state.currentWeekOffset);
   const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
@@ -760,7 +894,7 @@ function renderTimesheetTable(){
     const opts=`<option value="-1" ${ci===-1?'selected':''}>— Select —</option>`+state.clients.map((c,i)=>`<option value="${i}" ${ci===i?'selected':''}>${c}</option>`).join('');
     let rowTotal=0,cells='';
     dates.forEach((_,di)=>{const v=data[`${ri}_${di}`]||'';if(v)rowTotal+=parseFloat(v)||0;cells+=`<td><input class="hours-input" type="number" min="0" max="24" step="0.5" value="${v}" placeholder="—" onchange="updateHours(${ri},${di},this.value)" onfocus="this.select()"></td>`;});
-    html+=`<tr><td><div style="display:flex;align-items:center;gap:7px"><span class="client-dot" style="background:${colour}"></span><select class="client-picklist" onchange="updateRowClient(${ri},this.value)">${opts}</select></div></td>${cells}<td class="row-total">${rowTotal>0?rowTotal+'h':'—'}</td><td><button class="remove-row-btn" onclick="removeRow(${ri})">×</button></td></tr>`;
+    html+=`<tr><td><div style="display:flex;align-items:center;gap:6px"><span class="client-dot" style="background:${colour}"></span><select class="client-picklist" onchange="updateRowClient(${ri},this.value)">${opts}</select></div></td>${cells}<td class="row-total">${rowTotal>0?rowTotal+'h':'—'}</td><td><button class="remove-row-btn" onclick="removeRow(${ri})">×</button></td></tr>`;
   });
   html+='<tr class="totals-row"><td>TOTAL</td>';
   let grand=0;
@@ -790,10 +924,7 @@ const STATUS_CFG={'':{ label:'— Set status —',cls:''},'on-track':{label:'✅
 function getFYQuarter(date){
   const m=date.getMonth(),y=date.getFullYear();
   let q,fyStart;
-  if(m>=6&&m<=8){q=1;fyStart=y;}
-  else if(m>=9&&m<=11){q=2;fyStart=y;}
-  else if(m>=0&&m<=2){q=3;fyStart=y-1;}
-  else{q=4;fyStart=y-1;}
+  if(m>=6&&m<=8){q=1;fyStart=y;}else if(m>=9&&m<=11){q=2;fyStart=y;}else if(m>=0&&m<=2){q=3;fyStart=y-1;}else{q=4;fyStart=y-1;}
   return `Q${q} FY${String(fyStart).slice(2)}/${String(fyStart+1).slice(2)}`;
 }
 function getCurrentQuarter(){return getFYQuarter(new Date());}
@@ -808,12 +939,7 @@ function setupQuarterSelect(){
   const sel=document.getElementById('quarterSelect');if(!sel)return;
   const opts=getQuarterOptions(),cur=getCurrentQuarter(),nextQ=opts[opts.length-1]!==cur?opts[opts.length-1]:null;
   const existing=sel.value,keepVal=existing&&opts.includes(existing)?existing:cur;
-  sel.innerHTML=opts.map(q=>{
-    let label=q;
-    if(q===cur)label=`${q}  ← current`;
-    else if(q===nextQ)label=`${q}  (planning)`;
-    return `<option value="${q}" ${q===keepVal?'selected':''}>${label}</option>`;
-  }).join('');
+  sel.innerHTML=opts.map(q=>{let label=q;if(q===cur)label=`${q}  ← current`;else if(q===nextQ)label=`${q}  (planning)`;return `<option value="${q}" ${q===keepVal?'selected':''}>${label}</option>`;}).join('');
 }
 function getSelectedQuarter(){const s=document.getElementById('quarterSelect');return s?s.value:getCurrentQuarter();}
 function getQuarterIndex(q){return getQuarterOptions().indexOf(q);}
@@ -828,7 +954,6 @@ function toggleSetupMode(){
   if(banner)banner.style.display=setupMode?'flex':'none';
   renderRocks();
 }
-
 function addRock(){
   if(isHistoricalQuarter(getSelectedQuarter())&&!setupMode){showToast('Turn on Setup Mode to add rocks to a past quarter');return;}
   state.rocks.push({id:Date.now(),title:'',ownerIdx:-1,quarter:getSelectedQuarter(),weeklyStatus:{},finalStatus:''});
@@ -851,11 +976,11 @@ function renderRocks(){
   if(!list)return;
   const historical=isHistoricalQuarter(q),planning=isNextQuarter(q),isCurrent=!historical&&!planning;
   let bannerHtml='';
-  if(isCurrent)bannerHtml=`<div class="quarter-badge current">✅ Current quarter — update each rock's status weekly.</div>`;
-  else if(planning)bannerHtml=`<div class="quarter-badge planning">📋 Planning mode — set up rocks for next quarter.</div>`;
-  else bannerHtml=`<div class="quarter-badge historical">📦 Historical — this quarter is closed. Set a final outcome for each rock.</div>`;
+  if(isCurrent) bannerHtml=`<div class="quarter-badge current">✅ Current quarter — update each rock's status weekly.</div>`;
+  else if(planning) bannerHtml=`<div class="quarter-badge planning">📋 Planning mode — set up rocks for next quarter.</div>`;
+  else bannerHtml=`<div class="quarter-badge historical">📦 Historical — set a final outcome for each rock.</div>`;
   if(!rocks.length){
-    const msg=historical?`No rocks recorded for ${q}.`:planning?`No rocks planned for ${q} yet.`:`No rocks set for ${q}. Click <strong>+ Add Rock</strong>.`;
+    const msg=historical?`No rocks recorded for ${q}.`:planning?`No rocks planned yet.`:`No rocks set. Click <strong>+ Add Rock</strong>.`;
     list.innerHTML=bannerHtml+`<div class="empty-state" style="background:var(--card);border:1px solid var(--border);border-radius:12px">${msg}</div>`;return;
   }
   const wk=weekKey(state.currentWeekOffset);
@@ -867,15 +992,15 @@ function renderRocks(){
       const fsOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${fs===v?'selected':''}>${c.label}</option>`).join('');
       const lastWk=Object.keys(rock.weeklyStatus||{}).sort().pop();
       const lastStatus=lastWk?rock.weeklyStatus[lastWk]:'';
-      return `<div class="rock-card rock-historical"><div class="rock-header"><div class="rock-num" style="background:var(--muted)">${idx+1}</div><span class="rock-title-locked">${rock.title||'<em style="color:var(--light)">Untitled</em>'}</span><span style="font-size:11px;color:var(--muted);margin-left:auto;flex-shrink:0">${ownerName}</span></div><div class="rock-meta"><span class="meta-label">Last status</span><span class="rock-last-status ${STATUS_CFG[lastStatus]?.cls||''}">${lastStatus?STATUS_CFG[lastStatus].label:'No updates recorded'}</span><span class="meta-label" style="margin-left:14px">Final outcome</span><select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select><span class="lock-icon">🔒</span></div></div>`;
+      return `<div class="rock-card rock-historical"><div class="rock-header"><div class="rock-num" style="background:var(--muted)">${idx+1}</div><span class="rock-title-locked">${rock.title||'<em style="color:var(--light)">Untitled</em>'}</span><span style="font-size:11px;color:var(--muted);margin-left:auto;flex-shrink:0">${ownerName}</span></div><div class="rock-meta"><span class="meta-label">Last status</span><span class="rock-last-status ${STATUS_CFG[lastStatus]?.cls||''}">${lastStatus?STATUS_CFG[lastStatus].label:'No updates'}</span><span class="meta-label" style="margin-left:12px">Final outcome</span><select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select><span class="lock-icon">🔒</span></div></div>`;
     } else if(historical&&setupMode){
       const fs=rock.finalStatus||'',fsCls=STATUS_CFG[fs]?.cls||'';
       const fsOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${fs===v?'selected':''}>${c.label}</option>`).join('');
-      return `<div class="rock-card" style="border-color:var(--amber-b);border-style:dashed"><div class="rock-header"><div class="rock-num" style="background:var(--amber)">${idx+1}</div><input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)"><button class="rock-remove" onclick="removeRock(${rock.id})">×</button></div><div class="rock-meta"><span class="meta-label">Owner</span><select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select><span class="meta-label" style="margin-left:14px">Final outcome</span><select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select><span style="font-size:11px;color:var(--amber);font-weight:700;margin-left:8px">🔧 editing</span></div></div>`;
+      return `<div class="rock-card" style="border-color:var(--amber-b);border-style:dashed"><div class="rock-header"><div class="rock-num" style="background:var(--amber)">${idx+1}</div><input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)"><button class="rock-remove" onclick="removeRock(${rock.id})">×</button></div><div class="rock-meta"><span class="meta-label">Owner</span><select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select><span class="meta-label" style="margin-left:12px">Final outcome</span><select id="rstatus-${rock.id}" class="status-sel ${fsCls}" onchange="setFinalStatus(${rock.id},this.value)">${fsOpts}</select><span style="font-size:11px;color:var(--amber);font-weight:700;margin-left:8px">🔧 editing</span></div></div>`;
     } else {
-      const rockStatus=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[rockStatus]?.cls||'';
-      const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${rockStatus===v?'selected':''}>${c.label}</option>`).join('');
-      return `<div class="rock-card ${planning?'rock-planning':''}"><div class="rock-header"><div class="rock-num" ${planning?'style="background:var(--blue-bg);color:var(--blue)"':''}>${idx+1}</div><input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)"><button class="rock-remove" onclick="removeRock(${rock.id})">×</button></div><div class="rock-meta"><span class="meta-label">Owner</span><select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select>${isCurrent?`<span class="meta-label" style="margin-left:10px">This week's status</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select>`:`<span style="font-size:11px;color:var(--blue);font-weight:600;margin-left:12px">Ready when Q4 begins</span>`}</div></div>`;
+      const rs=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[rs]?.cls||'';
+      const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${rs===v?'selected':''}>${c.label}</option>`).join('');
+      return `<div class="rock-card ${planning?'rock-planning':''}"><div class="rock-header"><div class="rock-num" ${planning?'style="background:var(--blue-bg);color:var(--blue)"':''}>${idx+1}</div><input class="rock-title-input" type="text" value="${rock.title}" placeholder="Rock title..." oninput="updateRockTitle(${rock.id},this.value)"><button class="rock-remove" onclick="removeRock(${rock.id})">×</button></div><div class="rock-meta"><span class="meta-label">Owner</span><select class="ss-select" onchange="updateRockOwner(${rock.id},this.value)">${ownerOpts}</select>${isCurrent?`<span class="meta-label" style="margin-left:10px">This week</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select>`:`<span style="font-size:11px;color:var(--blue);font-weight:600;margin-left:10px">Ready when quarter begins</span>`}</div></div>`;
     }
   }).join('');
 }
@@ -886,7 +1011,7 @@ function renderMyRocks(){
   const my=state.rocks.filter(r=>r.ownerIdx===state.currentUser&&r.title.trim()&&r.quarter===cur);
   if(!my.length){sec.innerHTML='';return;}
   const wk=weekKey(state.currentWeekOffset);
-  sec.innerHTML=`<div class="card"><div class="card-title">🪨 My Rocks</div>${my.map(rock=>{const cs=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[cs]?.cls||'';const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${cs===v?'selected':''}>${c.label}</option>`).join('');return `<div class="rock-inline-row"><span style="font-size:15px">🪨</span><span class="rock-inline-name">${rock.title}</span><span class="rock-inline-q">${rock.quarter}</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select></div>`;}).join('')}</div>`;
+  sec.innerHTML=`<div class="card"><div class="card-title">🪨 My Rocks</div>${my.map(rock=>{const cs=rock.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[cs]?.cls||'';const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${cs===v?'selected':''}>${c.label}</option>`).join('');return `<div class="rock-inline-row"><span style="font-size:14px">🪨</span><span class="rock-inline-name">${rock.title}</span><span class="rock-inline-q">${rock.quarter}</span><select id="rstatus-${rock.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${rock.id},this.value)">${sOpts}</select></div>`;}).join('')}</div>`;
 }
 
 // ===================== ISSUES =====================
@@ -898,11 +1023,18 @@ function setupIssueOwnerSelects(){
 }
 function addIssue(){
   const text=document.getElementById('new-issue-text').value.trim();if(!text)return;
-  state.issues.push({id:Date.now(),text,type:document.getElementById('new-issue-type').value,ownerIdx:parseInt(document.getElementById('new-issue-owner').value),resolved:false,createdAt:new Date().toISOString()});
+  state.issues.push({id:Date.now(),text,type:document.getElementById('new-issue-type').value,ownerIdx:parseInt(document.getElementById('new-issue-owner').value),resolved:false,createdAt:new Date().toISOString(),idsNotes:''});
   document.getElementById('new-issue-text').value='';save();renderIssues();
 }
 function toggleIssue(id){const i=state.issues.find(i=>i.id===id);if(i)i.resolved=!i.resolved;save();renderIssues();}
 function removeIssue(id){state.issues=state.issues.filter(i=>i.id!==id);save();renderIssues();}
+function updateIssueNotes(id,val){const i=state.issues.find(i=>i.id===id);if(i){i.idsNotes=val;save();}}
+function toggleIdsNotes(id){
+  const body=document.getElementById(`ids-body-${id}`);
+  const btn=document.getElementById(`ids-btn-${id}`);
+  if(body){const isOpen=body.style.display!=='none';body.style.display=isOpen?'none':'block';if(btn)btn.textContent=isOpen?'IDS Notes ▸':'IDS Notes ▾';}
+}
+
 function renderIssues(){
   setupIssueOwnerSelects();
   const filter=(document.getElementById('issues-filter')||{}).value||'open';
@@ -917,7 +1049,23 @@ function renderIssues(){
   if(!issues.length){list.innerHTML=`<div class="empty-state">No issues found.</div>`;return;}
   list.innerHTML=issues.map(iss=>{
     const tc=TYPE_CFG[iss.type]||TYPE_CFG.issue,owner=iss.ownerIdx>=0?state.members[iss.ownerIdx]:'Unassigned',date=new Date(iss.createdAt).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
-    return `<div class="issue-item"><span class="issue-type ${tc.cls}">${tc.label}</span><div class="issue-body"><div class="issue-title ${iss.resolved?'resolved':''}">${iss.text}</div><div class="issue-meta">${owner} · ${date}</div></div><div class="issue-actions"><button class="resolve-btn ${iss.resolved?'reopen-btn':'open-btn'}" onclick="toggleIssue(${iss.id})">${iss.resolved?'Reopen':'✓ Resolve'}</button><button class="issue-remove" onclick="removeIssue(${iss.id})">×</button></div></div>`;
+    return `<div class="issue-item">
+      <div class="issue-header">
+        <span class="issue-type ${tc.cls}">${tc.label}</span>
+        <div class="issue-body">
+          <div class="issue-title ${iss.resolved?'resolved':''}">${iss.text}</div>
+          <div class="issue-meta">${owner} · ${date}</div>
+        </div>
+        <div class="issue-actions">
+          <button class="ids-toggle" id="ids-btn-${iss.id}" onclick="event.stopPropagation();toggleIdsNotes(${iss.id})">IDS Notes ▸</button>
+          <button class="resolve-btn ${iss.resolved?'reopen-btn':'open-btn'}" onclick="toggleIssue(${iss.id})">${iss.resolved?'Reopen':'✓ Resolve'}</button>
+          <button class="issue-remove" onclick="removeIssue(${iss.id})">×</button>
+        </div>
+      </div>
+      <div class="ids-notes" id="ids-body-${iss.id}" style="display:none">
+        <textarea placeholder="• Identify: What is the real issue?&#10;• Discuss: Get all perspectives&#10;• Solve: Decide and commit..." oninput="updateIssueNotes(${iss.id},this.value)" onclick="event.stopPropagation()">${iss.idsNotes||''}</textarea>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -927,23 +1075,218 @@ function addMetric(){state.scorecard.push({id:Date.now(),name:'',target:'',unit:
 function removeMetric(id){state.scorecard=state.scorecard.filter(m=>m.id!==id);save();renderScorecard();}
 function updateMetricName(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.name=val;save();}}
 function updateMetricTarget(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.target=val;save();renderScorecard();}}
-function updateMetricOwner(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.ownerIdx=parseInt(val);save();}}
+function updateMetricOwner(id,val){const m=state.scorecard.find(m=>m.id===id);if(m){m.ownerIdx=parseInt(val);save();renderScorecard();}}
 function updateMetricValue(id,wk,val){const m=state.scorecard.find(m=>m.id===id);if(!m)return;if(!m.values)m.values={};if(!val)delete m.values[wk];else m.values[wk]=val;save();renderScorecard();}
 function rag(actual,target){if(actual===''||actual===undefined)return 'grey';const a=parseFloat(actual),t=parseFloat(target);if(isNaN(a)||isNaN(t)||t===0)return 'grey';return a>=t?'green':'red';}
+
+// Check if a metric is auto-filled
+function getAutoValue(metric,wk){
+  const name=metric.name.toLowerCase();
+  // Billable days — auto-fill from timesheet for owner
+  if(name.includes('billable')&&name.includes('day')){
+    const days=calcBillableDays(metric.ownerIdx,wk);
+    return days>0?String(days):null;
+  }
+  // New leads / opportunities — auto-fill from leads log
+  if(name.includes('lead')||name.includes('opportunit')){
+    const count=getLeadCountForWeek(wk);
+    return count>0?String(count):null;
+  }
+  return null;
+}
+
 function renderScorecard(){
   const weeks=[];for(let i=-4;i<=0;i++){const d=getMondayOfWeek(state.scorecardWeekOffset+i);weeks.push({label:`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}`,key:weekKey(state.scorecardWeekOffset+i)});}
   const dates=getWeekDates(state.scorecardWeekOffset),mon=dates[0],fri=dates[4];
   document.getElementById('scorecard-week-label').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${fri.getDate()} ${MONTHS[fri.getMonth()].slice(0,3)} ${fri.getFullYear()}`;
   const table=document.getElementById('scorecard-table');
-  if(!state.scorecard.length){table.innerHTML=`<tr><td colspan="9"><div class="empty-state">No metrics yet. Click <strong>+ Add Metric</strong>.</div></td></tr>`;return;}
-  let html=`<thead><tr><th style="min-width:150px">Metric</th><th class="num" style="min-width:80px">Owner</th><th class="num">Target</th>${weeks.map(w=>`<th class="num" style="font-size:10px;min-width:80px">${w.label}</th>`).join('')}<th class="num">Trend</th><th></th></tr></thead><tbody>`;
+  if(!state.scorecard.length){table.innerHTML=`<tr><td colspan="9"><div class="empty-state">No metrics yet. Click <strong>+ Add Metric</strong>.</div></td></tr>`;renderLastWeeksLeads();return;}
+  let html=`<thead><tr><th style="min-width:140px">Metric</th><th class="num" style="min-width:75px">Owner</th><th class="num">Target</th>${weeks.map(w=>`<th class="num" style="font-size:10px;min-width:74px">${w.label}</th>`).join('')}<th class="num">Trend</th><th></th></tr></thead><tbody>`;
   state.scorecard.forEach(m=>{
     const ownerOpts=`<option value="-1" ${m.ownerIdx===-1?'selected':''}>—</option>`+state.members.map((mem,i)=>`<option value="${i}" ${m.ownerIdx===i?'selected':''}>${mem.split(' ')[0]}</option>`).join('');
-    const cells=weeks.map(w=>{const v=m.values?.[w.key]??'',r=rag(v,m.target),ragHtml=v!==''?`<span class="rag rag-${r}">${r==='green'?'✓':'✗'}</span>`:'';return `<td class="num"><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input class="metric-val-input" type="number" value="${v}" placeholder="—" onchange="updateMetricValue(${m.id},'${w.key}',this.value)" onfocus="this.select()">${ragHtml}</div></td>`;}).join('');
-    const vals=weeks.map(w=>parseFloat(m.values?.[w.key]??'')).filter(v=>!isNaN(v));let trend='—';if(vals.length>=2){const l=vals[vals.length-1],p=vals[vals.length-2];trend=l>p?'↑':l<p?'↓':'→';}
-    html+=`<tr><td><input class="metric-name-input" type="text" value="${m.name}" placeholder="Metric name..." oninput="updateMetricName(${m.id},this.value)"></td><td class="num"><select class="ss-select" style="font-size:11px;padding:4px 8px" onchange="updateMetricOwner(${m.id},this.value)">${ownerOpts}</select></td><td class="num"><input class="metric-val-input" type="text" value="${m.target}" placeholder="Target" onchange="updateMetricTarget(${m.id},this.value)" onfocus="this.select()"></td>${cells}<td class="num" style="font-size:18px;font-weight:700;color:var(--gold-dark)">${trend}</td><td><button class="remove-row-btn" onclick="removeMetric(${m.id})">×</button></td></tr>`;
+    const cells=weeks.map(w=>{
+      const autoVal=getAutoValue(m,w.key);
+      const stored=m.values?.[w.key]??'';
+      const displayVal=stored!==''?stored:(autoVal??'');
+      const isAuto=stored===''&&autoVal!==null;
+      const r=rag(displayVal,m.target);
+      const ragHtml=displayVal!==''?`<span class="rag rag-${r}">${r==='green'?'✓':'✗'}</span>`:'';
+      return `<td class="num"><div style="display:flex;align-items:center;justify-content:center;gap:3px">
+        <input class="metric-val-input${isAuto?' auto-filled':''}" type="number" value="${displayVal}" placeholder="—" 
+          title="${isAuto?'Auto-filled from your activity':''}"
+          onchange="updateMetricValue(${m.id},'${w.key}',this.value)" onfocus="this.select()">${ragHtml}
+      </div></td>`;
+    }).join('');
+    const vals=weeks.map(w=>{const av=getAutoValue(m,w.key);const sv=m.values?.[w.key]??'';const v=sv!==''?sv:av??'';return parseFloat(v);}).filter(v=>!isNaN(v));
+    let trend='—';if(vals.length>=2){const l=vals[vals.length-1],p=vals[vals.length-2];trend=l>p?'↑':l<p?'↓':'→';}
+    html+=`<tr><td><input class="metric-name-input" type="text" value="${m.name}" placeholder="Metric name..." oninput="updateMetricName(${m.id},this.value)"></td><td class="num"><select class="ss-select" style="font-size:11px;padding:3px 7px" onchange="updateMetricOwner(${m.id},this.value)">${ownerOpts}</select></td><td class="num"><input class="metric-val-input" type="text" value="${m.target}" placeholder="Target" onchange="updateMetricTarget(${m.id},this.value)" onfocus="this.select()"></td>${cells}<td class="num" style="font-size:17px;font-weight:700;color:var(--gold-dark)">${trend}</td><td><button class="remove-row-btn" onclick="removeMetric(${m.id})">×</button></td></tr>`;
   });
   table.innerHTML=html+'</tbody>';
+  renderLastWeeksLeads();
+}
+
+// ===================== L10 MEETING =====================
+function changeL10Week(dir){state.l10WeekOffset+=dir;save();renderL10();}
+
+function toggleL10Section(section){
+  const body=document.getElementById(`l10-body-${section}`);
+  const chevron=document.getElementById(`l10-chevron-${section}`);
+  if(body){const isOpen=body.classList.contains('open');body.classList.toggle('open');if(chevron)chevron.textContent=isOpen?'›':'⌄';}
+}
+
+function getL10WeekKey(){return weekKey(state.l10WeekOffset);}
+
+function saveL10Draft(){
+  const wk=getL10WeekKey();
+  if(!state.l10Notes[wk])state.l10Notes[wk]={};
+  ['segue','scorecard','rocks','headlines','conclude'].forEach(section=>{
+    const el=document.getElementById(`l10-notes-${section}`);
+    if(el)state.l10Notes[wk][section]=el.value;
+  });
+  save();
+}
+
+function saveL10(){
+  saveL10Draft();
+  // Save meeting scores
+  const wk=getL10WeekKey();
+  if(!state.l10Notes[wk])state.l10Notes[wk]={};
+  const scores={};
+  state.members.forEach((_,i)=>{
+    const inp=document.getElementById(`score-input-${i}`);
+    if(inp&&inp.value)scores[String(i)]=parseFloat(inp.value);
+  });
+  if(Object.keys(scores).length){
+    const avg=Math.round((Object.values(scores).reduce((a,b)=>a+b,0)/Object.values(scores).length)*10)/10;
+    // Check if meeting record exists
+    const existing=state.meetings.find(m=>m.date===wk);
+    if(existing){existing.scores=scores;existing.average=avg;existing.notes=state.l10Notes[wk]?.conclude||'';}
+    else{
+      state.meetings.push({id:Date.now(),date:wk,scores,average:avg,notes:state.l10Notes[wk]?.conclude||'',createdAt:new Date().toISOString()});
+    }
+  }
+  save();renderL10();showToast('Meeting saved ✓');
+}
+
+function addL10Todo(){
+  const text=document.getElementById('l10-new-todo-text').value.trim();if(!text)return;
+  const ownerSel=document.getElementById('l10-new-todo-owner');
+  const ownerIdx=ownerSel?parseInt(ownerSel.value):-1;
+  state.l10Todos.push({id:Date.now(),text,ownerIdx,done:false,createdAt:new Date().toISOString()});
+  document.getElementById('l10-new-todo-text').value='';save();renderL10Todos();
+}
+function toggleL10Todo(id){const t=state.l10Todos.find(t=>t.id===id);if(t)t.done=!t.done;save();renderL10Todos();}
+function removeL10Todo(id){state.l10Todos=state.l10Todos.filter(t=>t.id!==id);save();renderL10Todos();}
+
+function renderL10Todos(){
+  const el=document.getElementById('l10-todos-list');if(!el)return;
+  const ownerSel=document.getElementById('l10-new-todo-owner');
+  if(ownerSel)ownerSel.innerHTML=state.members.map((m,i)=>`<option value="${i}">${m.split(' ')[0]}</option>`).join('');
+  const todos=[...state.l10Todos].sort((a,b)=>a.done!==b.done?(a.done?1:-1):new Date(b.createdAt)-new Date(a.createdAt));
+  if(!todos.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:6px 0">No meeting to-dos yet.</div>`;return;}
+  el.innerHTML=todos.map(t=>`<div class="todo-item">
+    <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleL10Todo(${t.id})">
+    <span class="todo-text ${t.done?'done':''}">${t.text}</span>
+    <span class="todo-due">${t.ownerIdx>=0?state.members[t.ownerIdx].split(' ')[0]:''}</span>
+    <button class="todo-remove" onclick="removeL10Todo(${t.id})">×</button>
+  </div>`).join('');
+}
+
+function renderL10(){
+  const dates=getWeekDates(state.l10WeekOffset),mon=dates[0],fri=dates[4];
+  document.getElementById('l10-week-label').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${fri.getDate()} ${MONTHS[fri.getMonth()].slice(0,3)} ${fri.getFullYear()}`;
+
+  // Load notes for this week
+  const wk=getL10WeekKey();
+  const notes=state.l10Notes[wk]||{};
+  ['segue','scorecard','rocks','headlines','conclude'].forEach(s=>{
+    const el=document.getElementById(`l10-notes-${s}`);if(el)el.value=notes[s]||'';
+  });
+
+  // Rocks summary
+  const cur=getCurrentQuarter();
+  const curRocks=state.rocks.filter(r=>r.quarter===cur&&r.title.trim());
+  const rocksEl=document.getElementById('l10-rocks-summary');
+  if(rocksEl){
+    if(!curRocks.length){rocksEl.innerHTML=`<div style="color:var(--muted);font-size:13px">No rocks set for this quarter.</div>`;}
+    else{
+      rocksEl.innerHTML=curRocks.map(r=>{
+        const cs=r.weeklyStatus?.[wk]||'',sCls=STATUS_CFG[cs]?.cls||'';
+        const sOpts=Object.entries(STATUS_CFG).map(([v,c])=>`<option value="${v}" ${cs===v?'selected':''}>${c.label}</option>`).join('');
+        const owner=r.ownerIdx>=0?state.members[r.ownerIdx].split(' ')[0]:'?';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1;font-size:13px;font-weight:600">${r.title}</span>
+          <span style="font-size:11px;color:var(--muted)">${owner}</span>
+          <select id="rstatus-${r.id}" class="status-sel ${sCls}" onchange="updateRockStatus(${r.id},this.value)">${sOpts}</select>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Issues summary for IDS
+  const issuesEl=document.getElementById('l10-issues-summary');
+  if(issuesEl){
+    const openIssues=state.issues.filter(i=>!i.resolved);
+    if(!openIssues.length){issuesEl.innerHTML=`<div style="color:var(--muted);font-size:13px">No open issues. 🎉</div>`;}
+    else{
+      issuesEl.innerHTML=openIssues.map(iss=>{
+        const tc=TYPE_CFG[iss.type]||TYPE_CFG.issue;
+        const owner=iss.ownerIdx>=0?state.members[iss.ownerIdx].split(' ')[0]:'?';
+        return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="issue-type ${tc.cls}">${tc.label}</span>
+            <span style="flex:1;font-size:13px;font-weight:600">${iss.text}</span>
+            <span style="font-size:11px;color:var(--muted)">${owner}</span>
+            <button class="resolve-btn open-btn" onclick="toggleIssue(${iss.id});renderL10()">✓ Resolve</button>
+          </div>
+          <div style="padding-left:4px">
+            <textarea class="l10-notes" style="min-height:48px;font-size:12px" placeholder="• Identify → Discuss → Solve..." oninput="updateIssueNotes(${iss.id},this.value)">${iss.idsNotes||''}</textarea>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Meeting score inputs
+  const scoreGrid=document.getElementById('meeting-score-grid');
+  if(scoreGrid){
+    const existingMeeting=state.meetings.find(m=>m.date===wk);
+    scoreGrid.innerHTML=state.members.map((mem,i)=>{
+      const existing=existingMeeting?.scores?.[String(i)]||'';
+      return `<div class="score-card">
+        <div class="score-name">${mem.split(' ')[0]}</div>
+        <input class="score-input" id="score-input-${i}" type="number" min="1" max="10" step="0.5" value="${existing}" placeholder="—" oninput="updateMeetingAvg()">
+      </div>`;
+    }).join('');
+    updateMeetingAvg();
+  }
+
+  renderL10Todos();
+  renderMeetingHistory();
+}
+
+function updateMeetingAvg(){
+  const scores=state.members.map((_,i)=>{const inp=document.getElementById(`score-input-${i}`);return inp&&inp.value?parseFloat(inp.value):null;}).filter(v=>v!==null);
+  const avg=scores.length?Math.round((scores.reduce((a,b)=>a+b,0)/scores.length)*10)/10:null;
+  const el=document.getElementById('meeting-avg-display');
+  if(el)el.textContent=avg!==null?avg+'':'—';
+}
+
+function renderMeetingHistory(){
+  const el=document.getElementById('meeting-history-list');if(!el)return;
+  const sorted=[...state.meetings].filter(m=>m.scores&&Object.keys(m.scores).length>0).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,20);
+  if(!sorted.length){el.innerHTML=`<div class="empty-state">No meeting history yet.</div>`;return;}
+  el.innerHTML=sorted.map(m=>{
+    const d=new Date(m.date+'T00:00:00');
+    const dateStr=`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}`;
+    const scoreBadges=Object.entries(m.scores).map(([idx,score])=>`<span class="score-badge">${state.members[parseInt(idx)]?.split(' ')[0]||'?'}: ${score}</span>`).join('');
+    return `<div class="meeting-history-item">
+      <div class="meeting-history-date">${dateStr}</div>
+      <div class="meeting-history-notes">${m.notes||''}</div>
+      <div class="meeting-history-scores">${scoreBadges}</div>
+      <div class="meeting-history-avg">${m.average}</div>
+    </div>`;
+  }).join('');
 }
 
 // ===================== VISION =====================
@@ -953,8 +1296,8 @@ function removeYearGoal(id){state.yearGoals=state.yearGoals.filter(g=>g.id!==id)
 function updateYearGoal(id,val){const g=state.yearGoals.find(g=>g.id===id);if(g){g.text=val;save();}}
 function renderYearGoals(){
   const list=document.getElementById('one-year-goals-list');if(!list)return;
-  if(!state.yearGoals.length){list.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:8px 0">No goals yet.</div>`;return;}
-  list.innerHTML=state.yearGoals.map((g,i)=>`<div class="goal-item"><div class="goal-num">${i+1}</div><input class="goal-input" type="text" value="${g.text}" placeholder="e.g. Revenue of $1.2M this year..." oninput="updateYearGoal(${g.id},this.value)"><button class="goal-remove" onclick="removeYearGoal(${g.id})">×</button></div>`).join('');
+  if(!state.yearGoals.length){list.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:6px 0">No goals yet.</div>`;return;}
+  list.innerHTML=state.yearGoals.map((g,i)=>`<div class="goal-item"><div class="goal-num">${i+1}</div><input class="goal-input" type="text" value="${g.text}" placeholder="e.g. Revenue of $420K..." oninput="updateYearGoal(${g.id},this.value)"><button class="goal-remove" onclick="removeYearGoal(${g.id})">×</button></div>`).join('');
 }
 function renderVision(){
   ['corevalues','corefocus','niche','10year','3year'].forEach(k=>{const el=document.getElementById('vt-'+k);if(el)el.value=state.vision[k]||'';});
@@ -965,7 +1308,6 @@ function renderVision(){
 // ===================== MONTHLY =====================
 function changeMonth(dir){state.currentMonthOffset+=dir;save();renderMonthly();}
 function getMonthYear(o){const now=new Date(),d=new Date(now.getFullYear(),now.getMonth()+o,1);return{month:d.getMonth(),year:d.getFullYear()};}
-function toDays(h){if(h<=0)return 0;return Math.ceil((h/8)*2)/2;}
 function renderMonthly(){
   const{month,year}=getMonthYear(state.currentMonthOffset);
   document.getElementById('month-label').textContent=`${MONTHS[month]} ${year}`;
@@ -988,15 +1330,15 @@ function renderMonthly(){
   const cwh=state.clients.map((c,ci)=>({name:c,ci,totalH:ch[ci].total,totalD:toDays(ch[ci].total),members:ch[ci].members,colour:CLIENT_COLOURS[ci%CLIENT_COLOURS.length]})).filter(c=>c.totalH>0).sort((a,b)=>b.totalD-a.totalD);
   if(!cwh.length){document.getElementById('invoice-table').innerHTML=`<tr><td><div class="empty-state">No hours logged this month.</div></td></tr>`;return;}
   let tHtml=`<thead><tr><th>Client</th><th>Team breakdown</th><th style="text-align:right">Hours</th><th style="text-align:right">Days (invoiced)</th></tr></thead><tbody>`;
-  cwh.forEach(c=>{const bd=ams.filter(mi=>c.members[mi]>0).map(mi=>`<span class="member-tag">${state.members[mi]}: ${toDays(c.members[mi])}d <span style="opacity:.6;font-weight:500">(${c.members[mi]}h)</span></span>`).join(' ');tHtml+=`<tr><td><span class="client-dot" style="background:${c.colour};width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle"></span><strong>${c.name}</strong></td><td>${bd||'<span style="color:var(--muted);font-size:12px">—</span>'}</td><td style="text-align:right;color:var(--muted);font-weight:600">${c.totalH}h</td><td style="text-align:right;font-weight:800;font-size:15px;color:var(--gold-dark)">${c.totalD}d</td></tr>`;});
-  tHtml+=`<tr style="border-top:2px solid var(--border);background:var(--bg)"><td style="font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px">TOTAL</td><td></td><td style="text-align:right;font-weight:700;color:var(--muted)">${totalH}h</td><td style="text-align:right;font-weight:800;font-size:17px;color:var(--gold-dark)">${totalD}d</td></tr></tbody>`;
+  cwh.forEach(c=>{const bd=ams.filter(mi=>c.members[mi]>0).map(mi=>`<span class="member-tag">${state.members[mi]}: ${toDays(c.members[mi])}d <span style="opacity:.6;font-weight:500">(${c.members[mi]}h)</span></span>`).join(' ');tHtml+=`<tr><td><span class="client-dot" style="background:${c.colour};width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle"></span><strong>${c.name}</strong></td><td>${bd||'<span style="color:var(--muted);font-size:12px">—</span>'}</td><td style="text-align:right;color:var(--muted);font-weight:600">${c.totalH}h</td><td style="text-align:right;font-weight:800;font-size:14px;color:var(--gold-dark)">${c.totalD}d</td></tr>`;});
+  tHtml+=`<tr style="border-top:2px solid var(--border);background:var(--bg)"><td style="font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px">TOTAL</td><td></td><td style="text-align:right;font-weight:700;color:var(--muted)">${totalH}h</td><td style="text-align:right;font-weight:800;font-size:16px;color:var(--gold-dark)">${totalD}d</td></tr></tbody>`;
   document.getElementById('invoice-table').innerHTML=tHtml;
 }
 
 // ===================== SETTINGS =====================
 function renderSettings(){
-  document.getElementById('client-list').innerHTML=state.clients.map((c,i)=>`<div class="settings-item"><span class="client-dot" style="background:${CLIENT_COLOURS[i%CLIENT_COLOURS.length]};width:10px;height:10px"></span><span class="settings-item-name">${c}</span><button class="settings-remove" onclick="removeClient(${i})">×</button></div>`).join('');
-  document.getElementById('member-list').innerHTML=state.members.map((m,i)=>`<div class="settings-item"><span class="client-dot" style="background:var(--gold);width:10px;height:10px"></span><span class="settings-item-name">${m}</span><button class="settings-remove" onclick="removeMember(${i})">×</button></div>`).join('');
+  document.getElementById('client-list').innerHTML=state.clients.map((c,i)=>`<div class="settings-item"><span class="client-dot" style="background:${CLIENT_COLOURS[i%CLIENT_COLOURS.length]};width:9px;height:9px"></span><span class="settings-item-name">${c}</span><button class="settings-remove" onclick="removeClient(${i})">×</button></div>`).join('');
+  document.getElementById('member-list').innerHTML=state.members.map((m,i)=>`<div class="settings-item"><span class="client-dot" style="background:var(--gold);width:9px;height:9px"></span><span class="settings-item-name">${m}</span><button class="settings-remove" onclick="removeMember(${i})">×</button></div>`).join('');
 }
 function addClient(){const inp=document.getElementById('new-client'),n=inp.value.trim();if(!n)return;state.clients.push(n);inp.value='';save();renderSettings();showToast('Client added ✓');}
 function removeClient(i){if(state.clients.length<=1){showToast('Need at least one client');return;}state.clients.splice(i,1);save();renderSettings();}
