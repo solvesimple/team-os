@@ -474,25 +474,25 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
   </div>
 
   <!-- Agenda sections -->
-  <div class="l10-section" onclick="toggleL10Section('segue')">
-    <div class="l10-section-header"><div class="l10-section-num">1</div><div class="l10-section-title">Segue</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-segue">›</span></div>
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('segue')"><div class="l10-section-num">1</div><div class="l10-section-title">Segue</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-segue">›</span></div>
     <div class="l10-section-body" id="l10-body-segue"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Share one personal and one professional best from the past week.</p><textarea class="l10-notes" id="l10-notes-segue" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('scorecard')">
-    <div class="l10-section-header"><div class="l10-section-num">2</div><div class="l10-section-title">Scorecard Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-scorecard">›</span></div>
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('scorecard')"><div class="l10-section-num">2</div><div class="l10-section-title">Scorecard Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-scorecard">›</span></div>
     <div class="l10-section-body" id="l10-body-scorecard"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Review each measurable. Drop any off-track items to the Issues List.</p><textarea class="l10-notes" id="l10-notes-scorecard" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('rocks')">
-    <div class="l10-section-header"><div class="l10-section-num">3</div><div class="l10-section-title">Rock Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-rocks">›</span></div>
-    <div class="l10-section-body" id="l10-body-rocks" onclick="event.stopPropagation()"><p style="font-size:12px;color:var(--muted);margin-bottom:10px">On track or off track? Drop any off-track items to the Issues List.</p><div id="l10-rocks-summary"></div><textarea class="l10-notes" id="l10-notes-rocks" placeholder="Notes..." oninput="saveL10Draft()" style="margin-top:10px"></textarea></div>
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('rocks')"><div class="l10-section-num">3</div><div class="l10-section-title">Rock Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-rocks">›</span></div>
+    <div class="l10-section-body" id="l10-body-rocks"><p style="font-size:12px;color:var(--muted);margin-bottom:10px">On track or off track? Drop any off-track items to the Issues List.</p><div id="l10-rocks-summary"></div><textarea class="l10-notes" id="l10-notes-rocks" placeholder="Notes..." oninput="saveL10Draft()" style="margin-top:10px"></textarea></div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('headlines')">
-    <div class="l10-section-header"><div class="l10-section-num">4</div><div class="l10-section-title">Headlines</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-headlines">›</span></div>
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('headlines')"><div class="l10-section-num">4</div><div class="l10-section-title">Headlines</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-headlines">›</span></div>
     <div class="l10-section-body" id="l10-body-headlines"><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Customer and employee headlines — good news and bad news.</p><textarea class="l10-notes" id="l10-notes-headlines" placeholder="Notes..." oninput="saveL10Draft()"></textarea></div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('todos')">
-    <div class="l10-section-header"><div class="l10-section-num">5</div><div class="l10-section-title">To-Do List Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-todos">›</span></div>
-    <div class="l10-section-body" id="l10-body-todos" onclick="event.stopPropagation()">
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('todos')"><div class="l10-section-num">5</div><div class="l10-section-title">To-Do List Review</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-todos">›</span></div>
+    <div class="l10-section-body" id="l10-body-todos">
       <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Review last week's to-dos. Add new ones for this week.</p>
       <div id="l10-todos-list"></div>
       <div class="add-todo-row" style="margin-top:10px">
@@ -502,16 +502,16 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--ink);min-
       </div>
     </div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('ids')">
-    <div class="l10-section-header"><div class="l10-section-num">6</div><div class="l10-section-title">IDS — Issues</div><div class="l10-section-time">60 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-ids">›</span></div>
-    <div class="l10-section-body" id="l10-body-ids" onclick="event.stopPropagation()">
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('ids')"><div class="l10-section-num">6</div><div class="l10-section-title">IDS — Issues</div><div class="l10-section-time">60 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-ids">›</span></div>
+    <div class="l10-section-body" id="l10-body-ids">
       <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Identify → Discuss → Solve. Work through your issues list.</p>
       <div id="l10-issues-summary"></div>
     </div>
   </div>
-  <div class="l10-section" onclick="toggleL10Section('conclude')">
-    <div class="l10-section-header"><div class="l10-section-num">7</div><div class="l10-section-title">Conclude</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-conclude">›</span></div>
-    <div class="l10-section-body" id="l10-body-conclude" onclick="event.stopPropagation()">
+  <div class="l10-section">
+    <div class="l10-section-header" onclick="toggleL10Section('conclude')"><div class="l10-section-num">7</div><div class="l10-section-title">Conclude</div><div class="l10-section-time">5 min</div><span style="font-size:18px;color:var(--muted)" id="l10-chevron-conclude">›</span></div>
+    <div class="l10-section-body" id="l10-body-conclude">
       <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Recap to-dos. Cascading messages. Rate the meeting.</p>
       <textarea class="l10-notes" id="l10-notes-conclude" placeholder="Cascading messages..." oninput="saveL10Draft()"></textarea>
       <div style="margin-top:16px">
