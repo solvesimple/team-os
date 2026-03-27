@@ -602,7 +602,7 @@ const MSAL_CONFIG = {
   cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: true }
 };
 const SCOPES = ['Files.ReadWrite', 'User.Read'];
-const SHARED_DRIVE_ID = 'b!1P06FcIj6ke9aPV0U1R39Ep-8xt-nkNJm5-h0FXRjcdaseFY2dubQYfe39M3_wKG';
+const SHARED_DRIVE_ID = 'b!lP06FcIj6ke9aPV0U1R39Ep-8xt-nkNJm5-h0fXRjcf5MtYA_8WvRa2a5_ND2QZq';
 const SHARED_FILE_PATH = `/drives/${SHARED_DRIVE_ID}/root:/SolveSimple Team OS/team-os-data.json:/content`;
 const ADMIN_EMAIL = 'dan@solvesimple.au';
 
@@ -707,12 +707,23 @@ async function syncToOneDrive() {
   try {
     setSyncStatus('syncing','Saving...');
     const token = await getToken();
+    if (!token) { setSyncStatus('error','No auth token — please sign in again'); return; }
     const res = await fetch(`https://graph.microsoft.com/v1.0${SHARED_FILE_PATH}`, {
-      method:'PUT', headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'}, body:JSON.stringify(state)
+      method:'PUT',
+      headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
+      body:JSON.stringify(state)
     });
-    if (res.ok) setSyncStatus('saved','All changes saved to OneDrive');
-    else throw new Error(res.status);
-  } catch(e) { setSyncStatus('error','Save failed'); }
+    if (res.ok) {
+      setSyncStatus('saved','All changes saved to OneDrive');
+    } else {
+      const errText = await res.text();
+      console.error('Save failed:', res.status, errText);
+      setSyncStatus('error',`Save failed (${res.status}) — check console`);
+    }
+  } catch(e) {
+    console.error('Sync error:', e);
+    setSyncStatus('error','Save failed — check your connection');
+  }
 }
 
 function save() {
@@ -1087,8 +1098,8 @@ function getAutoValue(metric,wk){
     const days=calcBillableDays(metric.ownerIdx,wk);
     return days>0?String(days):null;
   }
-  // New leads / opportunities — auto-fill from leads log
-  if(name.includes('lead')||name.includes('opportunit')){
+  // New Leads — auto-fill total lead count for the week (any metric with 'lead' in name)
+  if(name.includes('lead')){
     const count=getLeadCountForWeek(wk);
     return count>0?String(count):null;
   }
