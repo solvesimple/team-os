@@ -762,6 +762,17 @@ function applyMigrations() {
   if(!state.l10Todos)           state.l10Todos=[];
   if(state.scorecardWeekOffset===undefined) state.scorecardWeekOffset=0;
   if(state.l10WeekOffset===undefined) state.l10WeekOffset=0;
+  // Migrate old l10Todos into unified todos list
+  if(state.l10Todos&&state.l10Todos.length>0){
+    state.l10Todos.forEach(t=>{
+      if(!state.todos.find(ut=>ut.id===t.id)){
+        state.todos.push({...t,source:'l10',createdWeek:weekKey(0),due:'this-week'});
+      }
+    });
+    state.l10Todos=[];
+  }
+  // Ensure all todos have a source tag
+  state.todos.forEach(t=>{ if(!t.source) t.source='myweek'; if(!t.createdWeek) t.createdWeek=weekKey(0); });
 }
 applyMigrations();
 
@@ -797,18 +808,39 @@ function addTodo(){
   state.todos.push({id:Date.now(),text,ownerIdx:state.currentUser,due,done:false,doneAt:null});
   document.getElementById('new-todo-text').value='';save();renderTodos();
 }
+function addTodo(){
+  const text=document.getElementById('new-todo-text').value.trim();if(!text)return;
+  const due=document.getElementById('new-todo-due').value;
+  const wk=weekKey(0); // always current week
+  state.todos.push({id:Date.now(),text,ownerIdx:state.currentUser,due,done:false,doneAt:null,createdWeek:wk,source:'myweek'});
+  document.getElementById('new-todo-text').value='';save();renderTodos();
+}
 function toggleTodo(id){const t=state.todos.find(t=>t.id===id);if(t){t.done=!t.done;t.doneAt=t.done?new Date().toISOString():null;}save();renderTodos();}
 function removeTodo(id){state.todos=state.todos.filter(t=>t.id!==id);save();renderTodos();}
 const DUE_ORDER={'today':0,'this-week':1,'next-week':2,'':3};
 const DUE_LABEL={'today':'Today','this-week':'This week','next-week':'Next week'};
 function renderTodos(){
-  const my=state.todos.filter(t=>t.ownerIdx===state.currentUser)
-    .sort((a,b)=>a.done!==b.done?(a.done?1:-1):(DUE_ORDER[a.due]??3)-(DUE_ORDER[b.due]??3));
+  const currentWk=weekKey(0); // always current week for visibility logic
+  const my=state.todos.filter(t=>{
+    if(t.ownerIdx!==state.currentUser) return false;
+    // Always show incomplete todos
+    if(!t.done) return true;
+    // Show completed todos only if they were completed this week
+    if(t.doneAt){
+      const doneWeek=weekKey(state.currentWeekOffset);
+      const doneDate=new Date(t.doneAt);
+      const weekStart=getMondayOfWeek(state.currentWeekOffset);
+      const weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);
+      return doneDate>=weekStart&&doneDate<=weekEnd;
+    }
+    return false;
+  }).sort((a,b)=>a.done!==b.done?(a.done?1:-1):(DUE_ORDER[a.due]??3)-(DUE_ORDER[b.due]??3));
   const el=document.getElementById('my-todos-list');
   if(!my.length){el.innerHTML=`<div style="padding:6px 0;color:var(--muted);font-size:13px">No to-dos yet.</div>`;return;}
   el.innerHTML=my.map(t=>`<div class="todo-item">
     <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleTodo(${t.id})">
     <span class="todo-text ${t.done?'done':''}">${t.text}</span>
+    ${t.source==='l10'?`<span style="font-size:10px;font-weight:700;background:var(--gold-bg);color:var(--gold-dark);padding:2px 6px;border-radius:4px;background:rgba(232,160,32,.12)">L10</span>`:''}
     ${t.due?`<span class="todo-due ${t.due==='today'&&!t.done?'overdue':''}">${DUE_LABEL[t.due]}</span>`:''}
     <button class="todo-remove" onclick="removeTodo(${t.id})">×</button>
   </div>`).join('');
@@ -1182,23 +1214,28 @@ function saveL10(){
 function addL10Todo(){
   const text=document.getElementById('l10-new-todo-text').value.trim();if(!text)return;
   const ownerSel=document.getElementById('l10-new-todo-owner');
-  const ownerIdx=ownerSel?parseInt(ownerSel.value):-1;
-  state.l10Todos.push({id:Date.now(),text,ownerIdx,done:false,createdAt:new Date().toISOString()});
-  document.getElementById('l10-new-todo-text').value='';save();renderL10Todos();
+  const ownerIdx=ownerSel?parseInt(ownerSel.value):0;
+  const wk=weekKey(state.l10WeekOffset); // tag to the L10 meeting week
+  state.todos.push({id:Date.now(),text,ownerIdx,due:'this-week',done:false,doneAt:null,createdWeek:wk,source:'l10'});
+  document.getElementById('l10-new-todo-text').value='';
+  save();renderL10Todos();
 }
-function toggleL10Todo(id){const t=state.l10Todos.find(t=>t.id===id);if(t)t.done=!t.done;save();renderL10Todos();}
-function removeL10Todo(id){state.l10Todos=state.l10Todos.filter(t=>t.id!==id);save();renderL10Todos();}
+function toggleL10Todo(id){const t=state.todos.find(t=>t.id===id);if(t){t.done=!t.done;t.doneAt=t.done?new Date().toISOString():null;}save();renderL10Todos();}
+function removeL10Todo(id){state.todos=state.todos.filter(t=>t.id!==id);save();renderL10Todos();}
 
 function renderL10Todos(){
   const el=document.getElementById('l10-todos-list');if(!el)return;
   const ownerSel=document.getElementById('l10-new-todo-owner');
   if(ownerSel)ownerSel.innerHTML=state.members.map((m,i)=>`<option value="${i}">${m.split(' ')[0]}</option>`).join('');
-  const todos=[...state.l10Todos].sort((a,b)=>a.done!==b.done?(a.done?1:-1):new Date(b.createdAt)-new Date(a.createdAt));
+  // Show all todos from state.todos that came from L10, sorted by done then date
+  const todos=[...state.todos]
+    .filter(t=>t.source==='l10')
+    .sort((a,b)=>a.done!==b.done?(a.done?1:-1):new Date(b.createdAt||0)-new Date(a.createdAt||0));
   if(!todos.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;padding:6px 0">No meeting to-dos yet.</div>`;return;}
   el.innerHTML=todos.map(t=>`<div class="todo-item">
     <input type="checkbox" class="todo-check" ${t.done?'checked':''} onchange="toggleL10Todo(${t.id})">
     <span class="todo-text ${t.done?'done':''}">${t.text}</span>
-    <span class="todo-due">${t.ownerIdx>=0?state.members[t.ownerIdx].split(' ')[0]:''}</span>
+    <span class="todo-due">${t.ownerIdx>=0?state.members[t.ownerIdx]?.split(' ')[0]||'':''}</span>
     <button class="todo-remove" onclick="removeL10Todo(${t.id})">×</button>
   </div>`).join('');
 }
