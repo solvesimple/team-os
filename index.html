@@ -755,6 +755,7 @@ function applyMigrations() {
   if(!state.issues)             state.issues=[];
   if(!state.scorecard)          state.scorecard=[];
   if(!state.leads)              state.leads=[];
+  if(!state.timesheetRows)      state.timesheetRows={};
   if(!state.vision)             state.vision={};
   if(!state.yearGoals)          state.yearGoals=[];
   if(!state.meetings)           state.meetings=[];
@@ -916,12 +917,24 @@ function renderLastWeeksLeads(){
 function getTimesheetKey(ui,wo){return `${ui}_${weekKey(wo)}`;}
 function toDays(h){if(h<=0)return 0;return Math.ceil((h/8)*2)/2;}
 
+// Rows are stored per user per week so each person's client assignments are independent
+function getRowsKey(ui,wo){return `rows_${ui}_${weekKey(wo)}`;}
+function getUserRows(ui,wo){
+  const key=getRowsKey(ui,wo);
+  return state.timesheetRows?.[key] || [{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];
+}
+function saveUserRows(ui,wo,rows){
+  if(!state.timesheetRows) state.timesheetRows={};
+  state.timesheetRows[getRowsKey(ui,wo)]=rows;
+}
+
 // Auto-calculate billable days for a member for a given week
 function calcBillableDays(memberIdx,wk){
   const tk=`${memberIdx}_${wk}`;
   const data=state.timesheet[tk]||{};
+  const rows=state.timesheetRows?.[`rows_${memberIdx}_${wk}`]||[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];
   let total=0;
-  state.rows.forEach((_,ri)=>{for(let di=0;di<5;di++)total+=parseFloat(data[`${ri}_${di}`]||0);});
+  rows.forEach((_,ri)=>{for(let di=0;di<5;di++)total+=parseFloat(data[`${ri}_${di}`]||0);});
   return toDays(total);
 }
 
@@ -929,10 +942,11 @@ function renderTimesheetTable(){
   const dates=getWeekDates(state.currentWeekOffset);
   const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
   const data=state.timesheet[tk]||{};
+  const userRows=getUserRows(state.currentUser,state.currentWeekOffset);
   let html='<thead><tr><th>Client</th>';
   dates.forEach((d,i)=>html+=`<th class="${isToday(d)?'th-today':''}">${DAYS[i]}<br><span style="font-size:10px;font-weight:500;opacity:.7">${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}</span></th>`);
   html+='<th>Total</th><th></th></tr></thead><tbody>';
-  state.rows.forEach((row,ri)=>{
+  userRows.forEach((row,ri)=>{
     const ci=row.clientIdx,colour=ci>=0?CLIENT_COLOURS[ci%CLIENT_COLOURS.length]:'#ccc';
     const opts=`<option value="-1" ${ci===-1?'selected':''}>— Select —</option>`+state.clients.map((c,i)=>`<option value="${i}" ${ci===i?'selected':''}>${c}</option>`).join('');
     let rowTotal=0,cells='';
@@ -941,7 +955,7 @@ function renderTimesheetTable(){
   });
   html+='<tr class="totals-row"><td>TOTAL</td>';
   let grand=0;
-  for(let di=0;di<5;di++){let day=0;state.rows.forEach((_,ri)=>day+=parseFloat(data[`${ri}_${di}`]||0));grand+=day;html+=`<td class="day-total">${day>0?day+'h':'—'}</td>`;}
+  for(let di=0;di<5;di++){let day=0;userRows.forEach((_,ri)=>day+=parseFloat(data[`${ri}_${di}`]||0));grand+=day;html+=`<td class="day-total">${day>0?day+'h':'—'}</td>`;}
   html+=`<td class="grand-total">${grand>0?grand+'h':'—'}</td><td></td></tr></tbody>`;
   document.getElementById('timesheet-table').innerHTML=html;
   const saved=state.timesheet['saved_'+tk];
@@ -949,9 +963,25 @@ function renderTimesheetTable(){
   badge.className='badge '+(saved?'badge-saved':'badge-unsaved');
   badge.textContent=saved?'✓ Saved':'● Unsaved';
 }
-function updateRowClient(ri,val){state.rows[ri].clientIdx=parseInt(val);save();renderTimesheetTable();}
-function addRow(){state.rows.push({clientIdx:-1});save();renderTimesheetTable();}
-function removeRow(ri){if(state.rows.length<=1)return;state.rows.splice(ri,1);save();renderTimesheetTable();}
+function updateRowClient(ri,val){
+  const rows=getUserRows(state.currentUser,state.currentWeekOffset);
+  rows[ri].clientIdx=parseInt(val);
+  saveUserRows(state.currentUser,state.currentWeekOffset,rows);
+  save();renderTimesheetTable();
+}
+function addRow(){
+  const rows=getUserRows(state.currentUser,state.currentWeekOffset);
+  rows.push({clientIdx:-1});
+  saveUserRows(state.currentUser,state.currentWeekOffset,rows);
+  save();renderTimesheetTable();
+}
+function removeRow(ri){
+  const rows=getUserRows(state.currentUser,state.currentWeekOffset);
+  if(rows.length<=1)return;
+  rows.splice(ri,1);
+  saveUserRows(state.currentUser,state.currentWeekOffset,rows);
+  save();renderTimesheetTable();
+}
 function updateHours(ri,di,val){
   const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
   if(!state.timesheet[tk])state.timesheet[tk]={};
@@ -959,7 +989,12 @@ function updateHours(ri,di,val){
   state.timesheet['saved_'+tk]=false;save();renderTimesheetTable();
 }
 function saveTimesheet(){state.timesheet['saved_'+getTimesheetKey(state.currentUser,state.currentWeekOffset)]=true;save();renderTimesheetTable();showToast('Timesheet saved ✓');}
-function clearWeek(){const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);state.timesheet[tk]={};state.timesheet['saved_'+tk]=false;state.rows=[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];save();renderTimesheetTable();}
+function clearWeek(){
+  const tk=getTimesheetKey(state.currentUser,state.currentWeekOffset);
+  state.timesheet[tk]={};state.timesheet['saved_'+tk]=false;
+  saveUserRows(state.currentUser,state.currentWeekOffset,[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}]);
+  save();renderTimesheetTable();
+}
 
 // ===================== ROCKS =====================
 const STATUS_CFG={'':{ label:'— Set status —',cls:''},'on-track':{label:'✅ On Track',cls:'s-on-track'},'off-track':{label:'⚠️ Off Track',cls:'s-off-track'},'blocked':{label:'🚫 Blocked',cls:'s-blocked'},'done':{label:'✓ Done',cls:'s-done'}};
@@ -1366,7 +1401,21 @@ function renderMonthly(){
   const dim=new Date(year,month+1,0).getDate();
   for(let day=1;day<=dim;day++){const d=new Date(year,month,day);if(d.getDay()!==1)continue;
     const ms=fv==='all'?state.members.map((_,i)=>i):[parseInt(fv)];
-    ms.forEach(mi=>{const tk=`${mi}_${dateKey(d)}`,data=state.timesheet[tk]||{};state.rows.forEach((row,ri)=>{const ci=row.clientIdx;if(ci<0)return;for(let di=0;di<5;di++){const wd=new Date(d);wd.setDate(d.getDate()+di);if(wd.getMonth()===month&&wd.getFullYear()===year){const v=parseFloat(data[`${ri}_${di}`]||0);ch[ci].total+=v;ch[ci].members[mi]+=v;}}});});
+    ms.forEach(mi=>{
+      const tk=`${mi}_${dateKey(d)}`,data=state.timesheet[tk]||{};
+      const wkKey=dateKey(d);
+      const userRows=state.timesheetRows?.[`rows_${mi}_${wkKey}`]||state.rows||[{clientIdx:-1},{clientIdx:-1},{clientIdx:-1}];
+      userRows.forEach((row,ri)=>{
+        const ci=row.clientIdx;if(ci<0)return;
+        for(let di=0;di<5;di++){
+          const wd=new Date(d);wd.setDate(d.getDate()+di);
+          if(wd.getMonth()===month&&wd.getFullYear()===year){
+            const v=parseFloat(data[`${ri}_${di}`]||0);
+            ch[ci].total+=v;ch[ci].members[mi]+=v;
+          }
+        }
+      });
+    });
   }
   let totalH=0;state.clients.forEach((_,ci)=>totalH+=ch[ci].total);const totalD=toDays(totalH);
   const ams=fv==='all'?state.members.map((_,i)=>i):[parseInt(fv)],mt={};
